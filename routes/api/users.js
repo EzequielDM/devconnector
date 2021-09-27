@@ -3,6 +3,8 @@ const router = express.Router();
 const Validator = require("validatorjs");
 const gravatar = require("gravatar");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const config = require("config");
 const { User, UserRules } = require("../../models/User");
 
 // @route    POST api/users
@@ -42,16 +44,30 @@ router.post("/", async (req, res) => {
             password,
         });
 
-        // @TODO: Encrypt password w/ bcrpyt
         const salt = await bcrypt.genSalt(10);
 
         user.password = await bcrypt.hash(user.password, salt);
 
         await user.save();
 
-        // @TODO: Return a JWT
+        const payload = {
+            user: {
+                id: user.id,
+            },
+        };
 
-        res.send("User registered");
+        jwt.sign(
+            payload,
+            config.get("jwtSecret"),
+            {
+                // @FIXME This should be 3600 in production!
+                expiresIn: 360000,
+            },
+            (err, token) => {
+                if (err) throw err;
+                res.json({ token });
+            }
+        );
     } catch (err) {
         console.error(err.message);
         res.status(500).send("Server error");
