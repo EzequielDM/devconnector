@@ -26,10 +26,15 @@ const User = mongoose.model(
     })
 );
 
-const UserRules = {
+const UserRegisterRules = {
     name: "required",
     email: "required|email",
     password: "required|min:8",
 };
 
-module.exports = { User, UserRules };
+const UserLoginRules = {
+    email: "required|email",
+    password: "required|string",
+};
+
+module.exports = { User, UserRegisterRules, UserLoginRules };
