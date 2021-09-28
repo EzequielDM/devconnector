@@ -5,17 +5,16 @@ const gravatar = require("gravatar");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const config = require("config");
-const { User, UserRules } = require("../../models/User");
+const { User, UserRules: UserRegisterRules } = require("../../models/User");
 
 // @route    POST api/users
 // @desc     Register user
 // @access   Public
 router.post("/", async (req, res) => {
-    let valid = new Validator(req.body, UserRules);
+    let valid = new Validator(req.body, UserRegisterRules);
     if (!valid.passes()) {
         console.error(valid.errors);
-        res.status(400).json(valid.errors);
-        return;
+        return res.status(400).json(valid.errors);
     }
 
     const { name, email, password } = req.body;
