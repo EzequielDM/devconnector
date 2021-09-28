@@ -1,9 +1,14 @@
 const express = require("express");
 const router = express.Router();
 const auth = require("../../middleware/auth");
+const Validator = require("validatorjs");
 
 const { User } = require("../../models/User");
-const { Profile } = require("../../models/Profile");
+const {
+    Profile,
+    ProfileRegisterRules,
+    ProfileUpdateRules,
+} = require("../../models/Profile");
 
 // @route    GET api/profile/me
 // @desc     Return user's profile
@@ -24,6 +29,137 @@ router.get("/me", auth, async (req, res) => {
         res.json(profile);
     } catch (err) {
         console.error(err.message);
+        return res.status(500).send("Server error");
+    }
+});
+
+// @route    POST api/profile
+// @desc     Create user profile
+// @access   Private
+router.post("/", auth, async (req, res) => {
+    let valid = new Validator(req.body, ProfileRegisterRules);
+    if (!valid.passes()) {
+        console.error(valid.errors);
+        return res.status(400).json(valid.errors);
+    }
+
+    const {
+        company,
+        website,
+        location,
+        bio,
+        status,
+        githubusername,
+        skills,
+        social,
+    } = req.body;
+
+    //#region Build profile fields obj
+    const profileFields = {
+        user: req.user.id,
+    };
+
+    company && (profileFields.company = company);
+    website && (profileFields.website = website);
+    location && (profileFields.location = location);
+    bio && (profileFields.bio = bio);
+    status && (profileFields.status = status);
+    githubusername && (profileFields.githubusername = githubusername);
+    skills &&
+        (profileFields.skills = skills.split(",").map((skill) => skill.trim()));
+    social && (profileFields.social = social);
+    //#endregion
+
+    try {
+        let exists = await Profile.findOne({ user: req.user.id });
+
+        if (exists) {
+            return res.status(400).json({
+                errors: [
+                    {
+                        user: "This profile already exists, you can't overwrite it, try using a PUT request to update it",
+                    },
+                ],
+            });
+        }
+
+        const profile = new Profile(profileFields);
+
+        await profile.save();
+
+        return res.status(201).json(profile);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send("Server error");
+    }
+
+    console.log(`profileFields`, profileFields);
+
+    return res.send("Passed validation");
+});
+
+// @route    PUT api/profile
+// @desc     Update user profile
+// @access   Private
+router.put("/", auth, async (req, res) => {
+    let valid = new Validator(req.body, ProfileRegisterRules);
+    if (!valid.passes()) {
+        console.error(valid.errors);
+        return res.status(400).json(valid.errors);
+    }
+
+    const {
+        company,
+        website,
+        location,
+        bio,
+        status,
+        githubusername,
+        skills,
+        social,
+        experience,
+        education,
+    } = req.body;
+
+    //#region Build profile fields obj
+    const profileFields = {
+        user: req.user.id,
+    };
+
+    company && (profileFields.company = company);
+    website && (profileFields.website = website);
+    location && (profileFields.location = location);
+    bio && (profileFields.bio = bio);
+    status && (profileFields.status = status);
+    githubusername && (profileFields.githubusername = githubusername);
+    skills &&
+        (profileFields.skills = skills.split(",").map((skill) => skill.trim()));
+    social && (profileFields.social = social);
+    experience && (profileFields.experience = experience);
+    education && (profileFields.education = education);
+    //#endregion
+
+    try {
+        let exists = await Profile.findOne({ user: req.user.id });
+
+        if (!exists)
+            return res.status(404).json({
+                errors: [
+                    {
+                        user: "Profile not found, have you created one yet?",
+                    },
+                ],
+            });
+
+        let profile = await Profile.findOneAndUpdate(
+            { user: req.user.id },
+            { $set: profileFields },
+            { new: true }
+        );
+
+        return res.status(200).json(profile);
+    } catch (e) {
+        console.error(e.message);
         return res.status(500).send("Server error");
     }
 });
