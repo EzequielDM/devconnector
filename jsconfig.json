@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "baseUrl": "./",
+        "paths": {
+            "@middleware/*": ["middleware/*"],
+            "@models/*": ["models/*"],
+            "@api": ["routes/api/*"]
+        }
+    }
+}
