@@ -20,7 +20,7 @@ module.exports = async (req, res, next) => {
                 .json({
                     errors: [{ message: "Invalid auth token (user deleted)" }],
                 });
-
+      
         req.user = decoded.user;
         next();
     } catch (err) {
