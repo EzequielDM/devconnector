@@ -209,7 +209,7 @@ router.get("/user/:id", async (req, res) => {
 });
 
 // @route     DELETE api/profile/
-// @desc      Delete own user profile
+// @desc      Delete own user & profile
 // @access    Private
 router.delete("/", auth, async (req, res) => {
     try {
