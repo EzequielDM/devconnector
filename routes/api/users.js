@@ -6,12 +6,13 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const config = require("config");
 const auth = require("../../middleware/auth");
+const noauth = require("../../middleware/noauth");
 const { User, UserRules: UserRegisterRules } = require("../../models/User");
 
 // @route    POST api/users
 // @desc     Register user
 // @access   Public
-router.post("/", async (req, res) => {
+router.post("/", noauth, async (req, res) => {
     let valid = new Validator(req.body, UserRegisterRules);
     if (!valid.passes()) {
         console.error(valid.errors);

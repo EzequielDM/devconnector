@@ -2,13 +2,23 @@ const express = require("express");
 const router = express.Router();
 const auth = require("../../middleware/auth");
 const Validator = require("validatorjs");
+const config = require("config");
+
+const axios = require("axios");
 
 const { User } = require("../../models/User");
 const {
     Profile,
     ProfileRegisterRules,
     ProfileUpdateRules,
+    ExperienceRules,
+    EducationRules,
 } = require("../../models/Profile");
+
+/**
+ * -- All routes related to a user's profile in general, including all basic HTTP methods.
+ */
+//#region User profile routes
 
 // @route    GET api/profile/me
 // @desc     Return user's profile
@@ -102,7 +112,7 @@ router.post("/", auth, async (req, res) => {
 // @desc     Update user profile
 // @access   Private
 router.put("/", auth, async (req, res) => {
-    let valid = new Validator(req.body, ProfileRegisterRules);
+    let valid = new Validator(req.body, ProfileUpdateRules);
     if (!valid.passes()) {
         console.error(valid.errors);
         return res.status(400).json(valid.errors);
@@ -229,6 +239,304 @@ router.delete("/", auth, async (req, res) => {
         return res.json(exist);
     } catch (error) {
         console.error(error);
+        return res.status(500).send("Server error");
+    }
+});
+
+//#endregion
+
+/**
+ * -- All routes related to Experience on a user's profile
+ * ! @TODO: Probably I should change the PUT method to POST as it's adding something to an object
+ * !   that works like a collection on Mongo, therefore, a POST request instead of PUT would make
+ * !   more sense in this case.
+ */
+//#region Profile experience routes
+
+// @route       PUT api/profile/experience
+// @desc        Add experience to user profile
+// @access      Private
+router.put("/experience", auth, async (req, res) => {
+    let valid = new Validator(req.body, ExperienceRules);
+    if (!valid.passes()) return res.status(400).json(valid.errors);
+
+    const { title, company, location, from, to, current, description } =
+        req.body;
+
+    //#region Build experienceFields obj
+    const experienceFields = {};
+
+    title && (experienceFields.title = title);
+    company && (experienceFields.company = company);
+    location && (experienceFields.location = location);
+    from && (experienceFields.from = from);
+    to && (experienceFields.to = to);
+    current && (experienceFields.current = current);
+    description && (experienceFields.description = description);
+    //#endregion
+
+    try {
+        let profile = await Profile.findOne({ user: req.user.id });
+
+        if (!profile)
+            return res
+                .status(400)
+                .json({ errors: { auth: "Profile not found" } });
+
+        profile.experience.unshift(experienceFields);
+
+        await profile.save();
+
+        return res.json(profile);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send("Server error");
+    }
+});
+
+// @route       DELETE api/profile/experience
+// @desc        Wipes all experience currently available to user
+// @access      Private
+router.delete("/experience", auth, async (req, res) => {
+    try {
+        let profile = await Profile.findOne({ user: req.user.id });
+
+        if (!profile)
+            return res.status(400).json({ errors: { id: "User not found" } });
+
+        profile.experience = [];
+
+        await profile.save();
+
+        return res.json({ experience: profile.experience, msg: "Wiped" });
+    } catch (err) {
+        console.error(err.message);
+        return res.status(500).send("Server error");
+    }
+});
+
+// @route       DELETE api/profile/experience/index/:id
+// @desc        Deletes a specific experience based on index
+// @access      Private
+router.delete("/experience/index/:id", auth, async (req, res) => {
+    try {
+        let profile = await Profile.findOne({ user: req.user.id });
+
+        if (!profile)
+            return res.status(400).json({ errors: { id: "User not found" } });
+
+        if (!profile.experience[req.params.id])
+            return res.status(400).json({
+                errors: {
+                    experience:
+                        "Experience not found, did you choose a valid experience?",
+                },
+            });
+
+        profile.experience.splice(req.params.id, 1);
+
+        await profile.save();
+
+        return res.json(profile.experience);
+    } catch (err) {
+        console.error(err.message);
+        return res.status(500).send("Server error");
+    }
+});
+
+// @route       DELETE api/profile/experience/:id
+// @desc        Deletes a specific experienced based on _id
+// @access      Private
+router.delete("/experience/:id", auth, async (req, res) => {
+    try {
+        let profile = await Profile.findOne({ user: req.user.id });
+
+        const index = profile.experience
+            .map((item) => item.id)
+            .indexOf(req.params.id);
+
+        if (index < 0)
+            return res
+                .status(400)
+                .json({ errors: { id: "Experience not found" } });
+
+        profile.experience.splice(index, 1);
+
+        await profile.save();
+
+        return res.json(profile);
+    } catch (err) {
+        if (err.kind == "ObjectId")
+            return res
+                .status(400)
+                .json({ errors: { id: "Experience not found" } });
+        console.error(err.message);
+        return res.status(500).send("Server error");
+    }
+});
+
+//#endregion
+
+/**
+ * -- All routes related to Education on a user's profile
+ * ! @TODO: Probably I should change the PUT method to POST here too, same as with experiences.
+ */
+//#region Profile education routes
+// @route       PUT api/profile/education
+// @desc        Add education to user profile
+// @access      Private
+router.put("/education", auth, async (req, res) => {
+    let valid = new Validator(req.body, EducationRules);
+    if (!valid.passes()) return res.status(400).json(valid.errors);
+
+    const { school, degree, field, from, to, current, description } = req.body;
+
+    //#region Build experienceFields obj
+    const educationFields = {};
+
+    school && (educationFields.school = school);
+    degree && (educationFields.degree = degree);
+    field && (educationFields.field = field);
+    from && (educationFields.from = from);
+    to && (educationFields.to = to);
+    current && (educationFields.current = current);
+    description && (educationFields.description = description);
+    //#endregion
+
+    try {
+        let profile = await Profile.findOne({ user: req.user.id });
+
+        if (!profile)
+            return res
+                .status(400)
+                .json({ errors: { auth: "Profile not found" } });
+
+        profile.education.unshift(educationFields);
+
+        await profile.save();
+
+        return res.json(profile);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send("Server error");
+    }
+});
+
+// @route       DELETE api/profile/experience
+// @desc        Wipes all experience currently available to user
+// @access      Private
+router.delete("/education", auth, async (req, res) => {
+    try {
+        let profile = await Profile.findOne({ user: req.user.id });
+
+        if (!profile)
+            return res.status(400).json({ errors: { id: "User not found" } });
+
+        profile.education = [];
+
+        await profile.save();
+
+        return res.json({ education: profile.education, msg: "Wiped" });
+    } catch (err) {
+        console.error(err.message);
+        return res.status(500).send("Server error");
+    }
+});
+
+// @route       DELETE api/profile/experience/index/:id
+// @desc        Deletes a specific experience based on index
+// @access      Private
+router.delete("/education/index/:id", auth, async (req, res) => {
+    try {
+        let profile = await Profile.findOne({ user: req.user.id });
+
+        if (!profile)
+            return res.status(400).json({ errors: { id: "User not found" } });
+
+        if (!profile.education[req.params.id])
+            return res.status(400).json({
+                errors: {
+                    education:
+                        "Experience not found, did you choose a valid experience?",
+                },
+            });
+
+        profile.education.splice(req.params.id, 1);
+
+        await profile.save();
+
+        return res.json(profile.education);
+    } catch (err) {
+        console.error(err.message);
+        return res.status(500).send("Server error");
+    }
+});
+
+// @route       DELETE api/profile/experience/:id
+// @desc        Deletes a specific experienced based on _id
+// @access      Private
+router.delete("/experience/:id", auth, async (req, res) => {
+    try {
+        let profile = await Profile.findOne({ user: req.user.id });
+
+        const index = profile.experience
+            .map((item) => item.id)
+            .indexOf(req.params.id);
+
+        if (index < 0)
+            return res
+                .status(400)
+                .json({ errors: { id: "Experience not found" } });
+
+        profile.experience.splice(index, 1);
+
+        await profile.save();
+
+        return res.json(profile);
+    } catch (err) {
+        if (err.kind == "ObjectId")
+            return res
+                .status(400)
+                .json({ errors: { id: "Experience not found" } });
+        console.error(err.message);
+        return res.status(500).send("Server error");
+    }
+});
+//#endregion
+
+/**
+ * -- Github API Integration
+ */
+//#region Github API Integration
+// @route       GET api/profile/github/:username
+// @desc        Return a users repositories from Github API.
+// @access      Public
+router.get("/github/:username", async (req, res) => {
+    const options = {
+        uri: encodeURI(
+            `https://api.github.com/users/${req.params.username}/repos?per_page=5&sort=created:asc`
+        ),
+        headers: {
+            "user-agent": "node.js",
+            Authorization: `token ${config.get("githubPAT")}`,
+        },
+    };
+
+    try {
+        let github = await axios.get(options.uri, options.headers);
+        if (!github)
+            return res
+                .status(400)
+                .json({ errors: { api: "Github API: Invalid user" } });
+
+        return res.json(github.data);
+    } catch (err) {
+        if (err.response) return res.status(404).json(err.response.data);
+        if (err.request)
+            return res
+                .status(408)
+                .json({ GithubAPI: "Request timed out. Is GitHub down?" });
+        console.error(err.message);
         return res.status(500).send("Server error");
     }
 });
