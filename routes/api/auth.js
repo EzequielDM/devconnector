@@ -5,6 +5,7 @@ const Validator = require("validatorjs");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const config = require("config");
+const noauth = require("../../middleware/noauth");
 const { User, UserLoginRules } = require("../../models/User");
 
 // @route    GET api/auth
@@ -23,7 +24,7 @@ router.get("/", auth, async (req, res) => {
 // @route POST api/auth
 // @desc Authenticate user & get JWT
 // @access Public
-router.post("/", async (req, res) => {
+router.post("/", noauth, async (req, res) => {
     let valid = new Validator(req.body, UserLoginRules);
     if (!valid.passes()) {
         console.error(valid.errors);

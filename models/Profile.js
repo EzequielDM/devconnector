@@ -67,6 +67,26 @@ const ProfileUpdateRules = {
     },
 };
 
+const ExperienceRules = {
+    title: "required|string",
+    company: "required|string",
+    location: "string",
+    from: "required|date",
+    to: "date|required_unless:current,true",
+    current: "boolean",
+    description: "string",
+};
+
+const EducationRules = {
+    school: "required|string",
+    degree: "required|string",
+    field: "required|string",
+    from: "required|date",
+    to: "date|required_unless:current,true",
+    current: "boolean",
+    description: "string",
+};
+
 const Profile = mongoose.model(
     "profile",
     new mongoose.Schema({
@@ -170,4 +190,10 @@ const Profile = mongoose.model(
     })
 );
 
-module.exports = { Profile, ProfileRegisterRules, ProfileUpdateRules };
+module.exports = {
+    Profile,
+    ProfileRegisterRules,
+    ProfileUpdateRules,
+    ExperienceRules,
+    EducationRules,
+};
