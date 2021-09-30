@@ -97,6 +97,29 @@ router.delete("/:id", auth, async (req, res) => {
     }
 });
 
+// @route       PUT api/posts/:id
+// @desc        Edit user's post
+// @access      Private
+router.put("/:id", auth, async (req, res) => {
+    let valid = new Validator(req.body, PostRules);
+    if (!valid.passes()) return res.status(400).json(valid.errors);
+
+    try {
+        let post = await Post.findOne({ _id: req.params.id });
+        if (!post)
+            return res.status(404).json({ errors: [{ id: "Post not found" }] });
+
+        post.text = req.body.text;
+
+        await post.save();
+
+        return res.json(post);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).send("Server error");
+    }
+});
+
 //#endregion
 
 /**
