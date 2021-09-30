@@ -23,6 +23,10 @@ const User = mongoose.model(
             type: Date,
             default: Date.now(),
         },
+        role: {
+            type: String,
+            default: "user",
+        },
     })
 );
 
