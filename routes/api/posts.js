@@ -78,7 +78,7 @@ router.get("/", auth, async (req, res) => {
 // @desc        Adds a like to the specified post (user)
 // @access      Private
 router.post("/like/:id", auth, async (req, res) => {
-    return res.status(200);
+    return res.status(201);
 });
 
 //#endregion
