@@ -14,11 +14,6 @@ const PostRules = {
     "comments.*.date": "date",
 };
 
-const LikeRules = {
-    user: "string",
-    date: "date",
-};
-
 const CommentRules = {
     user: "required",
     name: "string",
@@ -82,4 +77,4 @@ const Post = mongoose.model(
     })
 );
 
-module.exports = { Post, PostRules, LikeRules, CommentRules };
+module.exports = { Post, PostRules, CommentRules };
