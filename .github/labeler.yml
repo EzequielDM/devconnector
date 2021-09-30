@@ -1,2 +1,2 @@
 api:
-- any: ['routes/api/*']
+- any: ["routes/api/*"]
