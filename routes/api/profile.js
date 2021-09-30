@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const auth = require("../../middleware/auth");
+const checkID = require("../../middleware/checkID");
 const Validator = require("validatorjs");
 const config = require("config");
 
@@ -190,7 +191,7 @@ router.get("/", async (req, res) => {
 // @route    GET api/profile/user/:id
 // @desc     Get user profile by id
 // @access   Public
-router.get("/user/:id", async (req, res) => {
+router.get("/user/:id", checkID("id"), async (req, res) => {
     try {
         let exist = await Profile.findOne({ user: req.params.id }).populate(
             "user",
@@ -314,36 +315,43 @@ router.delete("/experience", auth, async (req, res) => {
 // @route       DELETE api/profile/experience/index/:id
 // @desc        Deletes a specific experience based on index
 // @access      Private
-router.delete("/experience/index/:id", auth, async (req, res) => {
-    try {
-        let profile = await Profile.findOne({ user: req.user.id });
+router.delete(
+    "/experience/index/:id",
+    auth,
+    checkID("id"),
+    async (req, res) => {
+        try {
+            let profile = await Profile.findOne({ user: req.user.id });
 
-        if (!profile)
-            return res.status(400).json({ errors: { id: "User not found" } });
+            if (!profile)
+                return res
+                    .status(400)
+                    .json({ errors: { id: "User not found" } });
 
-        if (!profile.experience[req.params.id])
-            return res.status(400).json({
-                errors: {
-                    experience:
-                        "Experience not found, did you choose a valid experience?",
-                },
-            });
+            if (!profile.experience[req.params.id])
+                return res.status(400).json({
+                    errors: {
+                        experience:
+                            "Experience not found, did you choose a valid experience?",
+                    },
+                });
 
-        profile.experience.splice(req.params.id, 1);
+            profile.experience.splice(req.params.id, 1);
 
-        await profile.save();
+            await profile.save();
 
-        return res.json(profile.experience);
-    } catch (err) {
-        console.error(err.message);
-        return res.status(500).send("Server error");
+            return res.json(profile.experience);
+        } catch (err) {
+            console.error(err.message);
+            return res.status(500).send("Server error");
+        }
     }
-});
+);
 
 // @route       DELETE api/profile/experience/:id
 // @desc        Deletes a specific experienced based on _id
 // @access      Private
-router.delete("/experience/:id", auth, async (req, res) => {
+router.delete("/experience/:id", auth, checkID("id"), async (req, res) => {
     try {
         let profile = await Profile.findOne({ user: req.user.id });
 
@@ -442,7 +450,7 @@ router.delete("/education", auth, async (req, res) => {
 // @route       DELETE api/profile/experience/index/:id
 // @desc        Deletes a specific experience based on index
 // @access      Private
-router.delete("/education/index/:id", auth, async (req, res) => {
+router.delete("/education/index/:id", auth, checkID("id"), async (req, res) => {
     try {
         let profile = await Profile.findOne({ user: req.user.id });
 
@@ -471,7 +479,7 @@ router.delete("/education/index/:id", auth, async (req, res) => {
 // @route       DELETE api/profile/experience/:id
 // @desc        Deletes a specific experienced based on _id
 // @access      Private
-router.delete("/experience/:id", auth, async (req, res) => {
+router.delete("/experience/:id", auth, checkID("id"), async (req, res) => {
     try {
         let profile = await Profile.findOne({ user: req.user.id });
 
