@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const auth = require("../../middleware/auth");
 const Validator = require("validatorjs");
+const mongoose = require("mongoose");
 const { User } = require("../../models/User");
 const { Post, PostRules } = require("../../models/Post");
 
@@ -89,6 +90,29 @@ router.post("/like/:id", auth, async (req, res) => {
                 .json({ errors: [{ id: "You already liked this post" }] });
 
         post.likes.unshift({ user: req.user.id });
+
+        await post.save();
+
+        return res.json(post);
+    } catch (err) {
+        console.error(err.message);
+        return res.status(500).send("Server error");
+    }
+});
+
+// @route       POST api/posts/like/:id/admin
+// @desc        Adds a ghost like (admin)
+// @access      Private
+router.post("/like/:id/admin", auth, async (req, res) => {
+    try {
+        let user = await User.findById(req.user.id);
+        if (user.role !== "admin") return res.status(403).send("Unauthorized");
+
+        let post = await Post.findOne({ _id: req.params.id });
+        if (!post)
+            return res.status(404).json({ errors: [{ id: "Post not found" }] });
+
+        post.likes.unshift({ user: new mongoose.Types.ObjectId() });
 
         await post.save();
 
