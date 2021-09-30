@@ -6,11 +6,10 @@ const checkID = require("../../middleware/checkID");
 const Validator = require("validatorjs");
 const mongoose = require("mongoose");
 const { User } = require("../../models/User");
-const { Post, PostRules } = require("../../models/Post");
+const { Post, PostRules, CommentRules } = require("../../models/Post");
 
 /**
  * SECTION All routes related to post creation, editting, and deletion.
- * @TODO: Add a route for deleting posts and editting them.
  */
 
 //#region
@@ -266,4 +265,64 @@ router.delete("/like/:id", admin, checkID("id"), async (req, res) => {
 /**
  * !SECTION
  */
+
+/**
+ * SECTION All routes related to comment handling
+ * @TODO: Post comment, edit comment, delete comment, get all comments on a post; (user)
+ * @TODO: Edit comment by ID, delete a user comment by ID, sudo a user comment; (admin)
+ */
+
+//#region
+
+// @route       POST api/posts/comment/:id
+// @desc        Posts a comment under the specified post
+// @access      Private
+router.post("/comment/:id", auth, checkID("id"), async (req, res) => {
+    let valid = new Validator(req.body, CommentRules);
+    if (!valid.passes()) return res.status(400).json(valid.errors);
+
+    try {
+        let post = await Post.findOne({ _id: req.params.id });
+        if (!post)
+            return res.status(404).json({ errors: [{ id: "Post not found" }] });
+
+        let user = await User.findById(req.user.id);
+
+        const { name, avatar } = user;
+
+        let lastPost = post.comments
+            .filter((item) => item.user == req.user.id)
+            .splice(0, 1)[0];
+
+        const cooldown = new Date(lastPost.date.getTime() + 15 * 1000);
+
+        if (cooldown > Date.now())
+            return res.status(400).json({
+                errors: {
+                    id: "You may only post a comment every 15 seconds.",
+                },
+            });
+
+        post.comments.unshift({
+            ...req.body,
+            user: req.user.id,
+            name,
+            avatar,
+        });
+
+        await post.save();
+
+        return res.json(post);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).send("Server error");
+    }
+});
+
+//#endregion
+
+/**
+ * !SECTION
+ */
+
 module.exports = router;

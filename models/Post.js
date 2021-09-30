@@ -15,10 +15,10 @@ const PostRules = {
 };
 
 const CommentRules = {
-    user: "required",
+    user: "string",
     name: "string",
     avatar: "string",
-    text: "required|string",
+    text: "required|string|between:8,150",
     date: "date",
 };
 
