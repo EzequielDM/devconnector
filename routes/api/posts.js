@@ -78,7 +78,25 @@ router.get("/", auth, async (req, res) => {
 // @desc        Adds a like to the specified post (user)
 // @access      Private
 router.post("/like/:id", auth, async (req, res) => {
-    return res.status(201);
+    try {
+        let post = await Post.findOne({ _id: req.params.id });
+        if (!post)
+            return res.status(404).json({ errors: [{ id: "Post not found" }] });
+
+        if (post.likes.some((like) => like.user.toString() === req.user.id))
+            return res
+                .status(400)
+                .json({ errors: [{ id: "You already liked this post" }] });
+
+        post.likes.unshift({ user: req.user.id });
+
+        await post.save();
+
+        return res.json(post);
+    } catch (err) {
+        console.error(err.message);
+        return res.status(500).send("Server error");
+    }
 });
 
 //#endregion
