@@ -19,7 +19,7 @@ module.exports = async (req, res, next) => {
                 errors: [{ message: "Invalid auth token (user deleted)" }],
             });
 
-        if (!exist.role === "admin")
+        if (exist.role !== "admin")
             return res
                 .status(403)
                 .json({ errors: [{ message: "Unauthorized user" }] });
