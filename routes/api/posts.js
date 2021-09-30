@@ -81,6 +81,22 @@ router.get("/all", auth, async (req, res) => {
     }
 });
 
+// @route       DELETE api/posts/:id
+// @desc        Delete user's post by id
+// @access      Private
+router.delete("/:id", auth, async (req, res) => {
+    try {
+        let post = await Post.findByIdAndDelete(req.params.id);
+        if (!post)
+            return res.status(404).json({ errors: [{ id: "Post not found" }] });
+
+        return res.json(post);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).send("Server error");
+    }
+});
+
 //#endregion
 
 /**
@@ -89,7 +105,6 @@ router.get("/all", auth, async (req, res) => {
 
 /**
  * SECTION All routes related to post likes handling
- * @TODO: Add a route for liking a post, disliking a post and adding ghost likes (admin)
  */
 
 //#region
@@ -121,7 +136,7 @@ router.post("/like/:id", auth, async (req, res) => {
 
 // @route       POST api/posts/like/:id/admin
 // @desc        Adds a ghost like (admin)
-// @access      Private
+// @access      Admin
 router.post("/like/:id/admin", admin, async (req, res) => {
     try {
         let post = await Post.findOne({ _id: req.params.id });
@@ -168,7 +183,7 @@ router.put("/like/:id", auth, async (req, res) => {
 
 // @route       PUT api/posts/like/:id/:like_id
 // @desc        Unlikes the post forcefully (admin)
-// @access      Private
+// @access      Admin
 router.put("/like/:id/:like_id", admin, async (req, res) => {
     try {
         const { id, like_id } = req.params;
@@ -195,6 +210,29 @@ router.put("/like/:id/:like_id", admin, async (req, res) => {
     }
 });
 
+// @route       DELETE api/posts/like/:id
+// @desc        Wipes all likes from specified post
+// @access      Admin
+router.delete("/like/:id", admin, async (req, res) => {
+    try {
+        let post = await Post.findOne({ _id: req.params.id });
+        if (!post)
+            return res.status(404).json({ errors: [{ id: "Post not found" }] });
+
+        post.likes = [];
+
+        await post.save();
+
+        return res.json(post);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).send("Server error");
+    }
+});
+
 //#endregion
 
+/**
+ * !SECTION
+ */
 module.exports = router;
