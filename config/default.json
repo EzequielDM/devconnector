@@ -1,0 +1,4 @@
+{
+	"mongoURI": "mongodb+srv://user:password@cluster0.esqgo.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+	"jwtSecret": "devconnectortoken"
+}
