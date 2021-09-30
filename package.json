@@ -26,13 +26,13 @@
     "gravatar": "^1.8.2",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.0.7",
-    "validatorjs": "^3.22.1"
+    "validatorjs": "^3.22.1",
+    "eslint": "^7.32.0",
+    "eslint-plugin-react": "^7.26.0"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.32.0",
     "@typescript-eslint/parser": "^4.32.0",
-    "eslint": "^7.32.0",
-    "eslint-plugin-react": "^7.26.0",
     "nodemon": "^2.0.13"
   }
 }
