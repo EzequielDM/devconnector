@@ -49,7 +49,7 @@ jobs:
         # Changes the PR comment to be "full" (as shown on actions page) or "compact", defaults to compact
         issueSummaryType: "compact"
         # When issueSummary is enabled, allows having the bot edit or refresh the comment on each new push
-        issueSummaryMethod: true
+        issueSummaryMethod: "refresh"
         # Should an issue comment only occur when there are warnings or errors?
         issueSummaryOnlyOnEvent: false
         # Optionally provide a comma-separated list of extensions (checks js, jsx, ts, tsx by default)
