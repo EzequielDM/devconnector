@@ -1,4 +1,0 @@
-{
-	"mongoURI": "mongodb+srv://zeki:moridaci@cluster0.esqgo.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
-	"jwtSecret": "devconnectortokensecreto"
-}
