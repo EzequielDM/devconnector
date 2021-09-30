@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const auth = require("../../middleware/auth");
-const admin = require("../../middleware/admin");
 const Validator = require("validatorjs");
 const { User } = require("../../models/User");
 const { Post, PostRules } = require("../../models/Post");
@@ -42,8 +41,6 @@ router.post("/", auth, async (req, res) => {
         console.error(err.message);
         return res.status(500).send("Server error");
     }
-
-    return res.json({ msg: "All valid" });
 });
 
 // @route       GET api/posts
@@ -74,5 +71,16 @@ router.get("/", auth, async (req, res) => {
  * SECTION All routes related to post likes handling
  * @TODO: Add a route for liking a post, disliking a post and adding ghost likes (admin)
  */
+
+//#region
+
+// @route       POST api/posts/like/:id
+// @desc        Adds a like to the specified post (user)
+// @access      Private
+router.post("/like/:id", auth, async (req, res) => {
+    return res.status(200);
+});
+
+//#endregion
 
 module.exports = router;
