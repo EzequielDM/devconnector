@@ -102,10 +102,6 @@ router.post("/", auth, async (req, res) => {
         console.error(error);
         return res.status(500).send("Server error");
     }
-
-    console.log(`profileFields`, profileFields);
-
-    return res.send("Passed validation");
 });
 
 // @route    PUT api/profile
