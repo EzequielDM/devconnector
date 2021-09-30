@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const auth = require("../../middleware/auth");
 const admin = require("../../middleware/admin");
+const checkID = require("../../middleware/checkID");
 const Validator = require("validatorjs");
 const mongoose = require("mongoose");
 const { User } = require("../../models/User");
@@ -81,6 +82,45 @@ router.get("/all", auth, async (req, res) => {
     }
 });
 
+// @route       DELETE api/posts/:id
+// @desc        Delete user's post by id
+// @access      Private
+router.delete("/:id", auth, checkID("id"), async (req, res) => {
+    try {
+        let post = await Post.findByIdAndDelete(req.params.id);
+        if (!post)
+            return res.status(404).json({ errors: [{ id: "Post not found" }] });
+
+        return res.json(post);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).send("Server error");
+    }
+});
+
+// @route       PUT api/posts/:id
+// @desc        Edit user's post
+// @access      Private
+router.put("/:id", auth, checkID("id"), async (req, res) => {
+    let valid = new Validator(req.body, PostRules);
+    if (!valid.passes()) return res.status(400).json(valid.errors);
+
+    try {
+        let post = await Post.findOne({ _id: req.params.id });
+        if (!post)
+            return res.status(404).json({ errors: [{ id: "Post not found" }] });
+
+        post.text = req.body.text;
+
+        await post.save();
+
+        return res.json(post);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).send("Server error");
+    }
+});
+
 //#endregion
 
 /**
@@ -89,7 +129,6 @@ router.get("/all", auth, async (req, res) => {
 
 /**
  * SECTION All routes related to post likes handling
- * @TODO: Add a route for liking a post, disliking a post and adding ghost likes (admin)
  */
 
 //#region
@@ -97,7 +136,7 @@ router.get("/all", auth, async (req, res) => {
 // @route       POST api/posts/like/:id
 // @desc        Adds a like to the specified post (user)
 // @access      Private
-router.post("/like/:id", auth, async (req, res) => {
+router.post("/like/:id", auth, checkID("id"), async (req, res) => {
     try {
         let post = await Post.findOne({ _id: req.params.id });
         if (!post)
@@ -121,8 +160,8 @@ router.post("/like/:id", auth, async (req, res) => {
 
 // @route       POST api/posts/like/:id/admin
 // @desc        Adds a ghost like (admin)
-// @access      Private
-router.post("/like/:id/admin", admin, async (req, res) => {
+// @access      Admin
+router.post("/like/:id/admin", admin, checkID("id"), async (req, res) => {
     try {
         let post = await Post.findOne({ _id: req.params.id });
         if (!post)
@@ -142,7 +181,7 @@ router.post("/like/:id/admin", admin, async (req, res) => {
 // @route       PUT api/posts/like/:id
 // @desc        Unlikes the post (user)
 // @access      Private
-router.put("/like/:id", auth, async (req, res) => {
+router.put("/like/:id", auth, checkID("id"), async (req, res) => {
     try {
         let post = await Post.findOne({ _id: req.params.id });
         if (!post)
@@ -168,33 +207,63 @@ router.put("/like/:id", auth, async (req, res) => {
 
 // @route       PUT api/posts/like/:id/:like_id
 // @desc        Unlikes the post forcefully (admin)
-// @access      Private
-router.put("/like/:id/:like_id", admin, async (req, res) => {
-    try {
-        const { id, like_id } = req.params;
+// @access      Admin
+router.put(
+    "/like/:id/:like_id",
+    checkID("id", "like_id"),
+    admin,
+    async (req, res) => {
+        try {
+            const { id, like_id } = req.params;
 
-        let post = await Post.findOne({ _id: id });
+            let post = await Post.findOne({ _id: id });
+            if (!post)
+                return res
+                    .status(404)
+                    .json({ errors: [{ id: "Post not found" }] });
+
+            if (!post.likes.some((like) => like.id === like_id))
+                return res
+                    .status(400)
+                    .json({ errors: { id: "Like not found, check like id" } });
+
+            const index = post.likes.map((item) => item.id).indexOf(like_id);
+
+            post.likes.splice(index, 1);
+
+            await post.save();
+
+            return res.json(post);
+        } catch (err) {
+            console.error(err.message);
+            return res.status(500).send("Server error");
+        }
+    }
+);
+
+// @route       DELETE api/posts/like/:id
+// @desc        Wipes all likes from specified post
+// @access      Admin
+router.delete("/like/:id", admin, checkID("id"), async (req, res) => {
+    try {
+        let post = await Post.findOne({ _id: req.params.id });
         if (!post)
             return res.status(404).json({ errors: [{ id: "Post not found" }] });
 
-        if (!post.likes.some((like) => like.id === like_id))
-            return res
-                .status(400)
-                .json({ errors: { id: "Like not found, check like id" } });
-
-        const index = post.likes.map((item) => item.id).indexOf(like_id);
-
-        post.likes.splice(index, 1);
+        post.likes = [];
 
         await post.save();
 
         return res.json(post);
     } catch (err) {
-        console.error(err.message);
+        console.error(err);
         return res.status(500).send("Server error");
     }
 });
 
 //#endregion
 
+/**
+ * !SECTION
+ */
 module.exports = router;
