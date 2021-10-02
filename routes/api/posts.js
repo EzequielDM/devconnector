@@ -274,6 +274,8 @@ router.delete("/like/:id", admin, checkID("id"), async (req, res) => {
 
 //#region
 
+// SECTION User
+
 // @route       POST api/posts/comment/:id
 // @desc        Posts a comment under the specified post
 // @access      Private
@@ -294,9 +296,11 @@ router.post("/comment/:id", auth, checkID("id"), async (req, res) => {
             .filter((item) => item.user == req.user.id)
             .splice(0, 1)[0];
 
-        const cooldown = new Date(lastPost.date.getTime() + 15 * 1000);
+        const cooldown = lastPost
+            ? new Date(lastPost.date.getTime() + 15 * 1000)
+            : 0;
 
-        if (cooldown > Date.now())
+        if (lastPost && cooldown > Date.now())
             return res.status(400).json({
                 errors: {
                     id: "You may only post a comment every 15 seconds.",
@@ -318,6 +322,220 @@ router.post("/comment/:id", auth, checkID("id"), async (req, res) => {
         return res.status(500).send("Server error");
     }
 });
+
+// @route       EDIT api/posts/comment/:id/:comment_id
+// @desc        Edits a comment a user made
+// @access      Private
+router.put(
+    "/comment/:id/:comment_id",
+    auth,
+    checkID("id", "comment_id"),
+
+    async (req, res) => {
+        let valid = new Validator(req.body, CommentRules);
+        if (!valid.passes) return res.status(400).json(valid.errors);
+
+        try {
+            let post = await Post.findById(req.params.id);
+            if (!post)
+                return res
+                    .status(404)
+                    .json({ errors: [{ id: "Post not found" }] });
+
+            if (
+                !post.comments.some(
+                    (item) =>
+                        item.id == req.params.comment_id &&
+                        item.user == req.user.id
+                )
+            )
+                return res.status(404).json({
+                    errors: [
+                        {
+                            id: "Comment not found or the comment selected isn't yours",
+                        },
+                    ],
+                });
+
+            const commentIndex = post.comments
+                .map((item) => item.id)
+                .indexOf(req.params.comment_id);
+
+            post.comments[commentIndex].text = req.body.text;
+
+            await post.save();
+
+            return res.json(post);
+        } catch (err) {
+            console.error(err);
+            return res.status(500).send("Server error");
+        }
+    }
+);
+
+// @route       DELETE api/posts/comment/:id/:comment_id
+// @desc        Deletes a comment the user made
+// @access      Private
+router.delete(
+    "/comment/:id/:comment_id",
+    auth,
+    checkID("id", "comment_id"),
+    async (req, res) => {
+        try {
+            let post = await Post.findOne({ _id: req.params.id });
+            if (!post)
+                return res
+                    .status(404)
+                    .json({ errors: [{ id: "Post not found" }] });
+
+            const isPostOwner = post.comments.filter(
+                (item) =>
+                    item._id == req.params.comment_id &&
+                    item.user == req.user.id
+            );
+
+            if (!isPostOwner.length)
+                return res.status(403).json({
+                    errrors: [
+                        {
+                            message: "The specified post isn't owned by you.",
+                        },
+                    ],
+                });
+
+            post.comments = post.comments.filter(
+                (item) => item._id != req.params.comment_id
+            );
+
+            await post.save();
+
+            return res.json(post);
+        } catch (err) {
+            console.error(err);
+            return res.status(500).send("Server error");
+        }
+    }
+);
+
+// !SECTION User
+
+// SECTION Admin
+
+// @route       POST api/posts/comment/sudo/:id/:user_id
+// @desc        Sudos a user comment under a post (admin)
+// @access      Private
+router.post(
+    "/comment/sudo/:id/:user_id",
+    admin,
+    checkID("id", "user_id"),
+    async (req, res) => {
+        let valid = new Validator(req.body, CommentRules);
+        if (!valid.passes()) return res.status(400).json(valid.errors);
+
+        try {
+            let post = await Post.findOne({ _id: req.params.id });
+            if (!post)
+                return res
+                    .status(404)
+                    .json({ errors: [{ id: "Post not found" }] });
+
+            let sudoUser = await User.findById(req.params.user_id);
+            if (!sudoUser)
+                return res
+                    .status(400)
+                    .json({ errors: { id: "User not found" } });
+
+            post.comments.unshift({
+                user: req.params.user_id,
+                text: req.body.text,
+                name: sudoUser.name,
+                avatar: sudoUser.avatar,
+            });
+
+            await post.save();
+
+            return res.json(post);
+        } catch (err) {
+            console.error(err);
+            return res.status(500).send("Server error");
+        }
+    }
+);
+
+// @route       PUT api/posts/comment/:id/:comment_id/admin
+// @desc        Edits a user comment under a post (admin)
+// @access      Private
+router.put(
+    "/comment/:id/:comment_id/admin",
+    admin,
+    checkID("id", "comment_id"),
+    async (req, res) => {
+        let valid = new Validator(req.body, CommentRules);
+        if (!valid.passes()) return res.status(400).json(valid.errors);
+
+        try {
+            let post = await Post.findOne({ _id: req.params.id });
+            if (!post)
+                return res
+                    .status(404)
+                    .json({ errors: [{ id: "Post not found" }] });
+
+            const commentIndex = post.comments
+                .map((item) => item._id.toString())
+                .indexOf(req.params.comment_id);
+
+            if (commentIndex < 0)
+                return res
+                    .status(404)
+                    .json({ errors: [{ comment_id: "Comment not found" }] });
+
+            post.comments[commentIndex].text = req.body.text;
+
+            await post.save();
+
+            return res.json(post);
+        } catch (err) {
+            console.error(err);
+            return res.status(500).send("Server error");
+        }
+    }
+);
+
+// @route       DELETE api/posts/comment/:id/:comment_id/admin
+// @desc        Deletes a user comment under a post (admin)
+// @access      Private
+router.delete(
+    "/comment/:id/:comment_id/admin",
+    admin,
+    checkID("id", "comment_id"),
+    async (req, res) => {
+        try {
+            let post = await Post.findOne({ _id: req.params.id });
+            if (!post)
+                return res
+                    .status(404)
+                    .json({ errors: [{ id: "Post not found" }] });
+
+            const commentIndex = post.comments
+                .map((item) => item.id.toString())
+                .indexOf(req.params.comment_id);
+
+            if (commentIndex < 0)
+                return res
+                    .status(404)
+                    .json({ errors: [{ comment_id: "Comment not found" }] });
+
+            post.comments.splice(commentIndex, 1);
+
+            await post.save();
+
+            return res.json(post);
+        } catch (err) {
+            console.error(err);
+            return res.status(500).send("Server error");
+        }
+    }
+);
 
 //#endregion
 
