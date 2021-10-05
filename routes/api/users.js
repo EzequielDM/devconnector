@@ -7,7 +7,7 @@ const jwt = require("jsonwebtoken");
 const config = require("config");
 const auth = require("../../middleware/auth");
 const noauth = require("../../middleware/noauth");
-const { User, UserRules: UserRegisterRules } = require("../../models/User");
+const { User, UserRegisterRules } = require("../../models/User");
 
 // @route    POST api/users
 // @desc     Register user

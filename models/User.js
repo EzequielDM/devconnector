@@ -31,7 +31,7 @@ const User = mongoose.model(
 );
 
 const UserRegisterRules = {
-    name: "required",
+    name: "required|min:4",
     email: "required|email",
     password: "required|min:8",
 };

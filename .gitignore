@@ -1,3 +1,4 @@
 node_modules/
 config/local.json
 .VSCodeCounter/*
+client/node_modules/
