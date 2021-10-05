@@ -7,6 +7,7 @@ import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { setAlert } from "../../actions/alert";
+import { register } from "../../actions/auth";
 
 interface FormData {
     name: string;
@@ -38,14 +39,7 @@ const Register = () => {
         if (password !== password2)
             dispatch(setAlert("Passwords do not match", "danger", 3000));
         else {
-            const newUser: FormData = {
-                name,
-                email,
-                password,
-                password2,
-            };
-
-            console.log(`Success registering ${newUser}`);
+            dispatch(register({ name, email, password }));
         }
     };
 
@@ -119,7 +113,7 @@ const Register = () => {
 };
 
 Register.propTypes = {
-    setAlert: PropTypes.func.isRequired,
+    setAlert: PropTypes.func,
 };
 
 export default Register;

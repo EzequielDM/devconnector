@@ -1,6 +1,7 @@
-import PropTypes from "prop-types";
-import { useSelector } from "react-redux";
-import { RootState } from "../../reducers";
+import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
+
+import { RootState } from '../../reducers';
 
 const Alert = () => {
     const alerts = useSelector((state: RootState) => state.alert);

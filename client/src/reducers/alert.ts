@@ -1,15 +1,4 @@
-import ActionTypes from "../actions/types";
-
-interface IAlert {
-    id: number;
-    msg?: string;
-    alertType?: string;
-}
-
-interface Action {
-    type: string;
-    payload: IAlert;
-}
+import ActionTypes, { Action, IAlert } from '../actions/types';
 
 const initialState: IAlert[] = [];
 
