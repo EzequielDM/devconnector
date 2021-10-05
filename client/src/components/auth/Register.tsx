@@ -1,9 +1,12 @@
+import PropTypes from "prop-types";
 import React, { ChangeEvent, useState } from "react";
-import { connect } from "react-redux";
-import { setAlert } from "../../actions/alert";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+import { setAlert } from "../../actions/alert";
 
 interface FormData {
     name: string;
@@ -12,7 +15,7 @@ interface FormData {
     password2: string;
 }
 
-const Register = (props) => {
+const Register = () => {
     const [formData, setFormData] = useState<FormData>({
         name: "",
         email: "",
@@ -21,6 +24,8 @@ const Register = (props) => {
     });
 
     const { name, email, password, password2 } = formData;
+
+    const dispatch = useDispatch();
 
     const onChange = (e: ChangeEvent<HTMLInputElement>) =>
         setFormData({
@@ -31,15 +36,17 @@ const Register = (props) => {
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (password !== password2)
-            return console.log("Passwords do not match");
-        const newUser: FormData = {
-            name,
-            email,
-            password,
-            password2,
-        };
+            dispatch(setAlert("Passwords do not match", "danger", 3000));
+        else {
+            const newUser: FormData = {
+                name,
+                email,
+                password,
+                password2,
+            };
 
-        console.log(`Success registering ${newUser}`);
+            console.log(`Success registering ${newUser}`);
+        }
     };
 
     return (
@@ -110,4 +117,9 @@ const Register = (props) => {
         </>
     );
 };
-export default connect(null, { setAlert })(Register);
+
+Register.propTypes = {
+    setAlert: PropTypes.func.isRequired,
+};
+
+export default Register;

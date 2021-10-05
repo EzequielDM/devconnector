@@ -1,19 +1,19 @@
 import ActionTypes from "../actions/types";
 
-export interface Alert {
+interface IAlert {
     id: number;
     msg?: string;
     alertType?: string;
 }
 
-export interface Action {
+interface Action {
     type: string;
-    payload: Alert;
+    payload: IAlert;
 }
 
-const initialState: Alert[] = [];
+const initialState: IAlert[] = [];
 
-const alert = (state: Alert[] = initialState, action: Action): Alert[] => {
+const alert = (state: IAlert[] = initialState, action: Action): IAlert[] => {
     const { type, payload } = action;
 
     switch (type) {
