@@ -8,22 +8,20 @@ module.exports = async (req, res, next) => {
     if (!token)
         return res
             .status(401)
-            .json({ errors: [{ message: "Invalid auth token (empty)" }] });
+            .json({ errors: { message: ["Invalid auth token (empty)"] } });
 
     try {
         const decoded = jwt.verify(token, config.get("jwtSecret"));
 
         let exist = await User.findById(decoded.user.id);
         if (!exist)
-            return res
-                .status(401)
-                .json({
-                    errors: [{ message: "Invalid auth token (user deleted)" }],
-                });
-      
+            return res.status(401).json({
+                errors: { message: ["Invalid auth token (user deleted)"] },
+            });
+
         req.user = decoded.user;
         next();
     } catch (err) {
-        res.status(401).json({ errors: [{ message: "Invalid auth token" }] });
+        res.status(401).json({ errors: { message: ["Invalid auth token"] } });
     }
 };

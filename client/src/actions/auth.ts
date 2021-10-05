@@ -16,12 +16,12 @@ export const register = (formData: IUser) => async (dispatch: Dispatch) => {
         });
     } catch (err) {
         const error: IAPIError = err as IAPIError;
-        const errors = error.response.data.errors;
+        let errors: any = error.response.data.errors;
 
-        if (errors.length < 1) {
-            [...errors].forEach(
-                (error) => (dispatch: Dispatch) =>
-                    setAlert((error as any).message, "danger")
+        if (errors) {
+            Object.keys(errors).forEach(
+                (error: any) => (dispatch: Dispatch) =>
+                    setAlert(error[Object.keys(error)[0]], "danger")
             );
         }
     }

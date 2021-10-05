@@ -39,7 +39,7 @@ router.post("/", noauth, async (req, res) => {
         if (!user || !isMatch) {
             return res
                 .status(400)
-                .json({ errors: [{ message: "Invalid credentials" }] });
+                .json({ errors: { message: ["Invalid credentials"] } });
         }
 
         const payload = {

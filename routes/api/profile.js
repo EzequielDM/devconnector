@@ -34,7 +34,7 @@ router.get("/me", auth, async (req, res) => {
         if (!profile) {
             return res
                 .status(404)
-                .json({ errors: [{ message: "User not found" }] });
+                .json({ errors: { message: ["User not found"] } });
         }
 
         res.json(profile);
@@ -200,7 +200,7 @@ router.get("/user/:id", checkID("id"), async (req, res) => {
 
         if (!exist) {
             return res.status(404).json({
-                errors: [{ id: "No profile found with that user id" }],
+                errors: { message: ["No profile found with that user id"] },
             });
         }
 
@@ -208,7 +208,7 @@ router.get("/user/:id", checkID("id"), async (req, res) => {
     } catch (error) {
         if (error.kind == "ObjectId")
             return res.status(404).json({
-                errors: [{ id: "No profile found with that user id" }],
+                errors: { message: ["No profile found with that user id"] },
             });
         console.error(error.message);
         return res.status(500).send("Server error");

@@ -36,7 +36,7 @@ export interface IAPIError {
     name: string;
     response: {
         data: {
-            errors: string[];
+            errors: Object[] | Array<string>[];
         };
     };
 }

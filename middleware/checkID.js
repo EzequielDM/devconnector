@@ -7,7 +7,7 @@ const checkID =
             if (!mongoose.Types.ObjectId.isValid(req.params[id[i]]))
                 return res
                     .status(400)
-                    .json({ errors: [{ id: `Invalid ${id[i]}` }] });
+                    .json({ errors: { message: [`Invalid ${id[i]}`] } });
 
         next();
     };

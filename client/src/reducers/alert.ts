@@ -1,4 +1,4 @@
-import ActionTypes, { Action, IAlert } from '../actions/types';
+import ActionTypes, { Action, IAlert } from "../actions/types";
 
 const initialState: IAlert[] = [];
 

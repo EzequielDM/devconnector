@@ -54,7 +54,7 @@ router.get("/", auth, async (req, res) => {
         if (!posts)
             return res
                 .status(404)
-                .json({ errors: [{ message: "User has no comments" }] });
+                .json({ errors: { message: ["User has no comments"] } });
 
         return res.json(posts);
     } catch (err) {
@@ -88,7 +88,9 @@ router.delete("/:id", auth, checkID("id"), async (req, res) => {
     try {
         let post = await Post.findByIdAndDelete(req.params.id);
         if (!post)
-            return res.status(404).json({ errors: [{ id: "Post not found" }] });
+            return res
+                .status(404)
+                .json({ errors: { message: ["Post not found"] } });
 
         return res.json(post);
     } catch (err) {
@@ -107,7 +109,9 @@ router.put("/:id", auth, checkID("id"), async (req, res) => {
     try {
         let post = await Post.findOne({ _id: req.params.id });
         if (!post)
-            return res.status(404).json({ errors: [{ id: "Post not found" }] });
+            return res
+                .status(404)
+                .json({ errors: { message: ["Post not found"] } });
 
         post.text = req.body.text;
 
@@ -139,12 +143,14 @@ router.post("/like/:id", auth, checkID("id"), async (req, res) => {
     try {
         let post = await Post.findOne({ _id: req.params.id });
         if (!post)
-            return res.status(404).json({ errors: [{ id: "Post not found" }] });
+            return res
+                .status(404)
+                .json({ errors: { message: ["Post not found"] } });
 
         if (post.likes.some((like) => like.user.toString() === req.user.id))
             return res
                 .status(400)
-                .json({ errors: [{ id: "You already liked this post" }] });
+                .json({ errors: { message: ["You already liked this post"] } });
 
         post.likes.unshift({ user: req.user.id });
 
@@ -164,7 +170,9 @@ router.post("/like/:id/admin", admin, checkID("id"), async (req, res) => {
     try {
         let post = await Post.findOne({ _id: req.params.id });
         if (!post)
-            return res.status(404).json({ errors: [{ id: "Post not found" }] });
+            return res
+                .status(404)
+                .json({ errors: { message: ["Post not found"] } });
 
         post.likes.unshift({ user: new mongoose.Types.ObjectId() });
 
@@ -184,7 +192,9 @@ router.put("/like/:id", auth, checkID("id"), async (req, res) => {
     try {
         let post = await Post.findOne({ _id: req.params.id });
         if (!post)
-            return res.status(404).json({ errors: [{ id: "Post not found" }] });
+            return res
+                .status(404)
+                .json({ errors: { message: ["Post not found"] } });
 
         if (!post.likes.some((like) => like.user.toString() === req.user.id))
             return res
@@ -219,7 +229,7 @@ router.put(
             if (!post)
                 return res
                     .status(404)
-                    .json({ errors: [{ id: "Post not found" }] });
+                    .json({ errors: { message: ["Post not found"] } });
 
             if (!post.likes.some((like) => like.id === like_id))
                 return res
@@ -247,7 +257,9 @@ router.delete("/like/:id", admin, checkID("id"), async (req, res) => {
     try {
         let post = await Post.findOne({ _id: req.params.id });
         if (!post)
-            return res.status(404).json({ errors: [{ id: "Post not found" }] });
+            return res
+                .status(404)
+                .json({ errors: { message: ["Post not found"] } });
 
         post.likes = [];
 
@@ -286,7 +298,9 @@ router.post("/comment/:id", auth, checkID("id"), async (req, res) => {
     try {
         let post = await Post.findOne({ _id: req.params.id });
         if (!post)
-            return res.status(404).json({ errors: [{ id: "Post not found" }] });
+            return res
+                .status(404)
+                .json({ errors: { message: ["Post not found"] } });
 
         let user = await User.findById(req.user.id);
 
@@ -340,7 +354,7 @@ router.put(
             if (!post)
                 return res
                     .status(404)
-                    .json({ errors: [{ id: "Post not found" }] });
+                    .json({ errors: { message: ["Post not found"] } });
 
             if (
                 !post.comments.some(
@@ -386,7 +400,7 @@ router.delete(
             if (!post)
                 return res
                     .status(404)
-                    .json({ errors: [{ id: "Post not found" }] });
+                    .json({ errors: { message: ["Post not found"] } });
 
             const isPostOwner = post.comments.filter(
                 (item) =>
@@ -437,7 +451,7 @@ router.post(
             if (!post)
                 return res
                     .status(404)
-                    .json({ errors: [{ id: "Post not found" }] });
+                    .json({ errors: { message: ["Post not found"] } });
 
             let sudoUser = await User.findById(req.params.user_id);
             if (!sudoUser)
@@ -478,7 +492,7 @@ router.put(
             if (!post)
                 return res
                     .status(404)
-                    .json({ errors: [{ id: "Post not found" }] });
+                    .json({ errors: { message: ["Post not found"] } });
 
             const commentIndex = post.comments
                 .map((item) => item._id.toString())
@@ -487,7 +501,7 @@ router.put(
             if (commentIndex < 0)
                 return res
                     .status(404)
-                    .json({ errors: [{ comment_id: "Comment not found" }] });
+                    .json({ errors: { comment_id: ["Comment not found"] } });
 
             post.comments[commentIndex].text = req.body.text;
 
@@ -514,7 +528,7 @@ router.delete(
             if (!post)
                 return res
                     .status(404)
-                    .json({ errors: [{ id: "Post not found" }] });
+                    .json({ errors: { message: ["Post not found"] } });
 
             const commentIndex = post.comments
                 .map((item) => item.id.toString())
@@ -523,7 +537,7 @@ router.delete(
             if (commentIndex < 0)
                 return res
                     .status(404)
-                    .json({ errors: [{ comment_id: "Comment not found" }] });
+                    .json({ errors: { comment_id: ["Comment not found"] } });
 
             post.comments.splice(commentIndex, 1);
 
