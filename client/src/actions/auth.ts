@@ -14,15 +14,22 @@ export const register = (formData: IUser) => async (dispatch: Dispatch) => {
             type: ActionTypes.REGISTER_SUCCESS,
             payload: res.data,
         });
-    } catch (err) {
-        const error: IAPIError = err as IAPIError;
-        let errors: any = error.response.data.errors;
+    } catch (err: any) {
+        const errors = err.response.data.errors;
+        let errorMessages: string[] = [];
 
-        if (errors) {
-            Object.keys(errors).forEach(
-                (error: any) => (dispatch: Dispatch) =>
-                    setAlert(error[Object.keys(error)[0]], "danger")
+        const getKeys = Object.keys(errors) as unknown as string[];
+
+        getKeys.forEach((element) => {
+            errors[element].forEach((element: string) =>
+                errorMessages.push(element)
             );
-        }
+        });
+
+        console.log(`errorMessages`, errorMessages);
+
+        errorMessages.forEach((error) =>
+            dispatch<any>(setAlert(error, "danger"))
+        );
     }
 };
