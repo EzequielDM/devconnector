@@ -8,13 +8,13 @@ const connectDB = require("./config/db");
 connectDB();
 
 app.use(
-    express.json({
-        extended: false,
-    })
+  express.json({
+    extended: false,
+  })
 );
 
 app.get("/", (req, res) => {
-    res.send("API Running");
+  res.send("API Running");
 });
 
 // Define routes
