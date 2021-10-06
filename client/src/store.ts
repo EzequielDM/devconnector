@@ -1,8 +1,9 @@
-import { applyMiddleware, createStore } from 'redux';
-import { composeWithDevTools } from 'redux-devtools-extension';
-import thunk from 'redux-thunk';
+import { applyMiddleware, createStore } from "redux";
+import { composeWithDevTools } from "redux-devtools-extension";
+import thunk from "redux-thunk";
 
-import { rootReducer } from './reducers';
+import { rootReducer } from "./reducers";
+import setAuthToken from "./utils/setAuthToken";
 
 const initialState = {};
 
@@ -32,11 +33,10 @@ store.subscribe(() => {
     let previousState = currentState;
     currentState = store.getState();
 
-    /**
-     * TODO Implement the token authentication under the subscription to follow Redux Guidelines
-     * ! This is important !
-     */
-    if (previousState) console.log(`currentState`, currentState);
+    if (previousState.auth.token !== currentState.auth.token) {
+        const token: string = currentState.auth.token || "";
+        setAuthToken(token);
+    }
 });
 
 export default store;

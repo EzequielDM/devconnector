@@ -1,7 +1,7 @@
 import { Dispatch } from "redux";
 import { setAlert } from "./alert";
 
-import ActionTypes, { IAPIError, IUser } from "./types";
+import ActionTypes, { IUser } from "./types";
 
 import api from "../utils/api";
 
@@ -14,8 +14,14 @@ export const register = (formData: IUser) => async (dispatch: Dispatch) => {
             type: ActionTypes.REGISTER_SUCCESS,
             payload: res.data,
         });
+
+        dispatch<any>(setAlert("User registered successfully!", "success"));
     } catch (err: any) {
+        if (typeof err.response.data === "string")
+            return dispatch<any>(setAlert(err.response.data, "danger"));
+
         const errors = err.response.data.errors;
+        if (!errors) return dispatch<any>(setAlert("Server error", "danger"));
         let errorMessages: string[] = [];
 
         const getKeys = Object.keys(errors) as unknown as string[];
@@ -25,8 +31,6 @@ export const register = (formData: IUser) => async (dispatch: Dispatch) => {
                 errorMessages.push(element)
             );
         });
-
-        console.log(`errorMessages`, errorMessages);
 
         errorMessages.forEach((error) =>
             dispatch<any>(setAlert(error, "danger"))
