@@ -4,70 +4,70 @@ name: ESLint
 
 # Controls when the workflow will run
 on:
-    # Triggers the workflow on push or pull request events but only for the master branch
-    push:
-        branches: [master]
-    pull_request:
-        branches: [master]
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
 
-    # Allows you to run this workflow manually from the Actions tab
-    workflow_dispatch:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-    # This workflow contains a single job called "build"
-    build:
-        # The type of runner that the job will run on
-        runs-on: ubuntu-latest
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
 
-        # Steps represent a sequence of tasks that will be executed as part of the job
-        steps:
-            # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-            - uses: actions/checkout@v2
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
 
-            - run: npm ci
-            - run: npm install eslint
-            - run: npm install eslint-plugin-react
-            - name: ESLint Plus
-              # You may pin to the exact commit or the version.
-              # uses: bradennapier/eslint-plus-action@972d934f4b5b41945c4f489dc49717c80eb8be4c
-              uses: bradennapier/eslint-plus-action@v3
-              with:
-                  # GitHub repository token for publishing inline lint annotations. Should be secrets.GITHUB_TOKEN.
-                  #github-token: # default is ${{ github.token }}
-                  # By setting this to "false", only errors will be annotated
-                  #reportWarnings: # optional
-                  # Report eslint warnings as errors? Defaults to false
-                  #reportWarningsAsErrors: # optional
-                  # Report any file paths which were ignored? Defaults to false
-                  #reportIgnoredFiles: # optional
-                  # Report suggestions with the rules? Defaults to true
-                  #reportSuggestions: # optional
-                  # Should the bot provide a summary of the results as a comment? Defaults to true
-                  #issueSummary: # optional
-                  # Changes the PR comment to be "full" (as shown on actions page) or "compact", defaults to compact
-                  #issueSummaryType: # optional
-                  # When issueSummary is enabled, allows having the bot edit or refresh the comment on each new push
-                  issueSummaryMethod: "edit"
-                  # Should an issue comment only occur when there are warnings or errors?
-                  issueSummaryOnlyOnEvent: false
-                  # Optionally provide a comma-separated list of extensions (checks js, jsx, ts, tsx by default)
-                  #extensions: # optional
-                  # Optionally provide a glob to include. Will include all if not provided
-                  #includeGlob: # optional
-                  # Optionally provide ignore pattern to use.  Will also use eslintignore unless specified
-                  #ignoreGlob: # optional
-                  # A config file to use, defaults to the default config file at process.cwd()
-                  #configFile: # optional
-                  # Optional comma-separated list of rule paths to use
-                  #rulePaths: # optional
-                  # Throw error if unmatched pattern is seen?  Defaults to false
-                  #errorOnUnmatchedPattern: # optional
-                  # Use eslintrc?  Defaults to true
-                  #useEslintrc: # optional
-                  # Set to false to not use eslintignore. Defaults to true
-                  #useEslintIgnore: # optional
-                  # Run with --fix? Defaults to false
-                  #fix: # optional
-                  # Force run npm ci (or yarn) for you. If you do not use this option, be sure to install the project dependencies before running this action.  By default it will run if a node_modules directory is not found or this is set to true
-                  #npmInstall: true
+      - run: npm ci
+      - run: npm install eslint
+      - run: npm install eslint-plugin-react
+      - name: ESLint Plus
+        # You may pin to the exact commit or the version.
+        # uses: bradennapier/eslint-plus-action@972d934f4b5b41945c4f489dc49717c80eb8be4c
+        uses: bradennapier/eslint-plus-action@v3
+        with:
+          # GitHub repository token for publishing inline lint annotations. Should be secrets.GITHUB_TOKEN.
+          #github-token: # default is ${{ github.token }}
+          # By setting this to "false", only errors will be annotated
+          #reportWarnings: # optional
+          # Report eslint warnings as errors? Defaults to false
+          #reportWarningsAsErrors: # optional
+          # Report any file paths which were ignored? Defaults to false
+          #reportIgnoredFiles: # optional
+          # Report suggestions with the rules? Defaults to true
+          #reportSuggestions: # optional
+          # Should the bot provide a summary of the results as a comment? Defaults to true
+          #issueSummary: # optional
+          # Changes the PR comment to be "full" (as shown on actions page) or "compact", defaults to compact
+          #issueSummaryType: # optional
+          # When issueSummary is enabled, allows having the bot edit or refresh the comment on each new push
+          issueSummaryMethod: "edit"
+          # Should an issue comment only occur when there are warnings or errors?
+          issueSummaryOnlyOnEvent: false
+          # Optionally provide a comma-separated list of extensions (checks js, jsx, ts, tsx by default)
+          #extensions: # optional
+          # Optionally provide a glob to include. Will include all if not provided
+          #includeGlob: # optional
+          # Optionally provide ignore pattern to use.  Will also use eslintignore unless specified
+          #ignoreGlob: # optional
+          # A config file to use, defaults to the default config file at process.cwd()
+          #configFile: # optional
+          # Optional comma-separated list of rule paths to use
+          #rulePaths: # optional
+          # Throw error if unmatched pattern is seen?  Defaults to false
+          #errorOnUnmatchedPattern: # optional
+          # Use eslintrc?  Defaults to true
+          #useEslintrc: # optional
+          # Set to false to not use eslintignore. Defaults to true
+          #useEslintIgnore: # optional
+          # Run with --fix? Defaults to false
+          #fix: # optional
+          # Force run npm ci (or yarn) for you. If you do not use this option, be sure to install the project dependencies before running this action.  By default it will run if a node_modules directory is not found or this is set to true
+          #npmInstall: true
