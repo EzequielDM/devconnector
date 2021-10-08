@@ -21,10 +21,7 @@ const App = () => {
     if (localStorage.token) setAuthToken(localStorage.token);
     store.dispatch(loadUser() as any);
 
-    window.addEventListener(
-      "storage",
-      () => localStorage.token && store.dispatch({ type: ActionTypes.LOGOUT })
-    );
+    window.addEventListener("storage", () => !localStorage.token && store.dispatch({ type: ActionTypes.LOGOUT }));
   }, []);
 
   return (

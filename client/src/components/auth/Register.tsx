@@ -1,13 +1,14 @@
 import PropTypes from "prop-types";
 import React, { ChangeEvent, useState } from "react";
-import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, Redirect } from "react-router-dom";
 
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { setAlert } from "../../actions/alert";
 import { register } from "../../actions/auth";
+import { RootState } from "../../reducers";
 
 interface FormData {
   name: string;
@@ -36,12 +37,13 @@ const Register = () => {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password !== password2)
-      dispatch(setAlert("Passwords do not match", "danger", 3000));
+    if (password !== password2) dispatch(setAlert("Passwords do not match", "danger", 3000));
     else {
       dispatch(register({ name, email, password }));
     }
   };
+
+  if (useSelector((state: RootState) => state.auth.isAuthenticated)) return <Redirect to="/dashboard" />;
 
   return (
     <>
@@ -51,14 +53,7 @@ const Register = () => {
       </p>
       <form className="form" onSubmit={onSubmit}>
         <div className="form-group">
-          <input
-            type="text"
-            placeholder="Name"
-            name="name"
-            value={name}
-            onChange={onChange}
-            required
-          />
+          <input type="text" placeholder="Name" name="name" value={name} onChange={onChange} required />
         </div>
         <div className="form-group">
           <input
@@ -71,8 +66,7 @@ const Register = () => {
             required
           />
           <small className="form-text">
-            This site uses Gravatar so if you want a profile image, use a
-            Gravatar email
+            This site uses Gravatar so if you want a profile image, use a Gravatar email
           </small>
         </div>
         <div className="form-group">

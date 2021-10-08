@@ -1,8 +1,13 @@
+import PropTypes from "prop-types";
 import { ChangeEvent, useState } from "react";
-import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { Link, Redirect } from "react-router-dom";
 
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+import { login } from "../../actions/auth";
+import { RootState } from "../../reducers/index";
 
 interface FormData {
   email: string;
@@ -17,6 +22,8 @@ const Login = () => {
 
   const { email, password } = formData;
 
+  const dispatch = useDispatch();
+
   const onChange = (e: ChangeEvent<HTMLInputElement>) =>
     setFormData({
       ...formData,
@@ -26,8 +33,10 @@ const Login = () => {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log(`Success logging in`);
+    dispatch(login({ email, password }));
   };
+
+  if (useSelector((state: RootState) => state.auth.isAuthenticated)) return <Redirect to="/dashboard" />;
 
   return (
     <>
@@ -66,6 +75,10 @@ const Login = () => {
       </p>
     </>
   );
+};
+
+Login.propTypes = {
+  login: PropTypes.func,
 };
 
 export default Login;

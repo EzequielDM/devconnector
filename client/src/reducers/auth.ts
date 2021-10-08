@@ -7,7 +7,7 @@ const initialState: IAuth = {
   user: "",
 };
 
-export const auth = (state = initialState, action: Action) => {
+export const auth = (state: IAuth = initialState, action: Action): IAuth => {
   const { type, payload } = action;
 
   switch (type) {
@@ -22,11 +22,12 @@ export const auth = (state = initialState, action: Action) => {
     case ActionTypes.AUTH_ERROR:
       return {
         ...state,
-        token: null,
+        token: undefined,
         isAuthenticated: false,
         isLoading: false,
-        user: null,
+        user: undefined,
       };
+    case ActionTypes.LOGIN_SUCCESS:
     case ActionTypes.REGISTER_SUCCESS:
       return {
         ...state,

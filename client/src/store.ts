@@ -9,11 +9,7 @@ const initialState = {};
 
 const middleware = [thunk];
 
-const store = createStore(
-  rootReducer,
-  initialState,
-  composeWithDevTools(applyMiddleware(...middleware))
-);
+const store = createStore(rootReducer, initialState, composeWithDevTools(applyMiddleware(...middleware)));
 
 /**
  * ! Set up a storage subscription listener
@@ -26,11 +22,11 @@ const store = createStore(
  * -- Why is this here?
  * * This is here because if we don't initialize the current state from the redux store, the value will be undefined, which will return an error
  */
-let currentState = store.getState();
+let currentState: any = store.getState();
 
 store.subscribe(() => {
   // Save the value from our previous state before updating to check if there are differences
-  let previousState = currentState;
+  let previousState: any = currentState;
   currentState = store.getState();
 
   if (previousState.auth.token !== currentState.auth.token) {

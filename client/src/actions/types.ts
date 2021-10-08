@@ -6,6 +6,7 @@ enum ActionTypes {
   USER_LOADED = "USER_LOADED",
   AUTH_ERROR = "AUTH_ERROR",
   LOGOUT = "LOGOUT",
+  LOGIN_SUCCESS = "LOGIN_SUCCESS",
 }
 
 export interface IAlert {
@@ -16,7 +17,7 @@ export interface IAlert {
 
 export interface Action {
   type?: string;
-  payload?: IAlert;
+  payload?: any;
 }
 
 export interface IAuth {
@@ -27,7 +28,7 @@ export interface IAuth {
 }
 
 export interface IUser {
-  name: string;
+  name?: string;
   email: string;
   password: string;
   age?: string;
