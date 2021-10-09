@@ -5,16 +5,18 @@ import * as React from "react";
 import { Provider } from "react-redux";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
+import { loadUser } from "./actions/auth";
+import ActionTypes from "./actions/types";
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
+import Dashboard from "./components/dashboard/Dashboard";
 import Alert from "./components/layout/Alert";
 import Landing from "./components/layout/Landing";
 import Navbar from "./components/layout/Navbar";
 import store from "./store";
-import { useEffect } from "react";
 import setAuthToken from "./utils/setAuthToken";
-import { loadUser } from "./actions/auth";
-import ActionTypes from "./actions/types";
+import { useEffect } from "react";
+import PrivateRoute from "./components/routing/PrivateRoute";
 
 const App = () => {
   useEffect(() => {
@@ -35,6 +37,7 @@ const App = () => {
             <Switch>
               <Route exact path="/register" component={Register} />
               <Route exact path="/login" component={Login} />
+              <PrivateRoute exact path="/dashboard" component={Dashboard} />
             </Switch>
           </section>
         </>

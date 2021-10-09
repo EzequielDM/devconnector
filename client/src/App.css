@@ -489,7 +489,7 @@ button {
 }
 
 /* Mobile Styles */
-@media (max-width: 700px) {
+@media (max-width: 500px) {
   .container {
     margin-top: 8rem;
   }

@@ -30,7 +30,7 @@ export const register = (formData: IUser) => async (dispatch: Dispatch) => {
       payload: res.data,
     });
 
-    dispatch(setAlert("User registered successfully!", "success") as any);
+    dispatch(setAlert("User registered successfully!", "success", 1000) as any);
     dispatch<any>(loadUser());
   } catch (err: any) {
     if (typeof err.response.data === "string") return dispatch(setAlert(err.response.data, "danger") as any);
@@ -60,7 +60,7 @@ export const login = (formData: IUser) => async (dispatch: Dispatch) => {
       payload: res.data,
     });
 
-    dispatch(setAlert("Logged in successfully!", "success") as any);
+    dispatch(setAlert("Logged in successfully!", "success", 1000) as any);
     dispatch<any>(loadUser());
   } catch (err: any) {
     if (typeof err.response.data === "string") return dispatch(setAlert(err.response.data, "danger") as any);

@@ -43,7 +43,7 @@ const Navbar = () => {
     <nav className="navbar bg-dark">
       <h1>
         <Link to="/">
-          <FontAwesomeIcon icon={faCode} /> DevConnector
+          <FontAwesomeIcon icon={faCode} /> <span className="hide-sm">DevConnector</span>
         </Link>
       </h1>
       {!isLoading && <>{isAuthenticated ? authLinks : guestLinks}</>}
