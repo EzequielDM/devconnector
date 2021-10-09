@@ -6,6 +6,7 @@ import Spinner from "../layout/Spinner";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
+import DashboardActions from "./DashboardActions";
 
 const Dashboard = () => {
   const dispatch = useDispatch();
@@ -29,13 +30,15 @@ const Dashboard = () => {
         <FontAwesomeIcon icon={faUser} /> <span>Welcome, {name}</span>
       </p>
 
-      {isNewUser && (
+      {isNewUser ? (
         <>
           <p className="text-warning">Seems like you haven't set up a profile yet.</p>
-          <Link className="btn btn-primary my-1" to="/profile/create">
+          <Link className="btn btn-primary my-1" to="/profile/edit">
             Create profile
           </Link>
         </>
+      ) : (
+        <DashboardActions />
       )}
     </>
   );
