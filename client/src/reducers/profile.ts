@@ -26,6 +26,13 @@ export const profile = (state: IProfileState = initialState, action: Action): IP
         profile: payload,
         loading: false,
       };
+    case ActionTypes.LOGOUT:
+      return {
+        ...state,
+        profile: undefined,
+        repos: [],
+        loading: true,
+      };
     case ActionTypes.PROFILE_ERROR:
       return {
         ...state,

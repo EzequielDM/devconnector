@@ -36,28 +36,55 @@ export interface IUser {
   age?: string;
 }
 
+/**
+ * company,
+    website,
+    location,
+    status,
+    skills,
+    bio,
+    githubusername,
+    youtube,
+    twitter,
+    facebook,
+    linkedin,
+    instagram,
+ */
+
 export interface IProfile {
   user: {
     _id: string;
     name: string;
     avatar: string;
   };
-  status: string;
-  skills: string[];
-  experience: {
+  company?: string;
+  website?: string;
+  location?: string;
+  status?: string;
+  skills?: string;
+  bio?: string;
+  githubusername?: string;
+  social?: {
+    youtube?: string;
+    twitter?: string;
+    facebook?: string;
+    linkedin?: string;
+    instagram?: string;
+  };
+  experience?: {
     title: string;
     company: string;
     from: Date;
     current?: boolean;
   }[];
-  education: {
+  education?: {
     school: string;
     degree: string;
     field: string;
     from: Date;
     current?: boolean;
   }[];
-  date: Date;
+  date?: Date;
 }
 
 export interface IAPIError {
