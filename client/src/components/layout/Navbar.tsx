@@ -1,7 +1,7 @@
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 
-import { faCode, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
+import { faCode, faSignOutAlt, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { logout } from "../../actions/auth";
@@ -13,7 +13,9 @@ const Navbar = () => {
   const authLinks = (
     <ul>
       <li>
-        <Link to="/profiles">Developers</Link>
+        <Link to="/dashboard">
+          <FontAwesomeIcon icon={faUser} /> <span className="hide-sm">Dashboard</span>
+        </Link>
       </li>
       <li>
         <a onClick={() => dispatch<any>(logout())} href="#!">
@@ -43,7 +45,7 @@ const Navbar = () => {
     <nav className="navbar bg-dark">
       <h1>
         <Link to="/">
-          <FontAwesomeIcon icon={faCode} /> DevConnector
+          <FontAwesomeIcon icon={faCode} /> <span className="hide-sm">DevConnector</span>
         </Link>
       </h1>
       {!isLoading && <>{isAuthenticated ? authLinks : guestLinks}</>}

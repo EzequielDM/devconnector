@@ -8,6 +8,8 @@ const config = require("config");
 const auth = require("../../middleware/auth");
 const noauth = require("../../middleware/noauth");
 const { User, UserRegisterRules } = require("../../models/User");
+const { Profile } = require("../../models/Profile.js");
+const normalize = require("normalize-url");
 
 // @route    POST api/users
 // @desc     Register user
@@ -32,11 +34,14 @@ router.post("/", noauth, async (req, res) => {
       });
     }
 
-    const avatar = gravatar.url(email, {
-      s: "200",
-      r: "pg",
-      d: "mm",
-    });
+    const avatar = normalize(
+      gravatar.url(email, {
+        s: "200",
+        r: "pg",
+        d: "mm",
+      }),
+      { forceHttps: true }
+    );
 
     user = new User({
       name,
@@ -45,11 +50,18 @@ router.post("/", noauth, async (req, res) => {
       password,
     });
 
+    const profile = new Profile({
+      user: user.id,
+      status: "Hey! I'm new to DevConnector",
+    });
+
     const salt = await bcrypt.genSalt(10);
 
     user.password = await bcrypt.hash(user.password, salt);
 
     await user.save();
+
+    await profile.save();
 
     const payload = {
       user: {
@@ -99,8 +111,7 @@ router.delete("/", auth, async (req, res) => {
   try {
     let exist = await User.findOneAndDelete({ id: req.user.id });
 
-    if (!exist)
-      return res.status(400).json({ errors: { id: "User not found" } });
+    if (!exist) return res.status(400).json({ errors: { id: "User not found" } });
 
     return res.json(exist);
   } catch (error) {
