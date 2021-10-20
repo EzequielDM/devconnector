@@ -37,9 +37,12 @@ img {
 
 /* Utilities */
 .spinner {
-  height: 120px;
-  width: 120px;
-  animation: spinner 0.7s linear infinite;
+  align-self: center;
+  justify-self: center;
+}
+
+.spinner.spinner-text {
+  margin-top: 20px;
 }
 
 @keyframes spinner {

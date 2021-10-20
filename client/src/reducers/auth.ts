@@ -4,7 +4,7 @@ const initialState: IAuth = {
   token: localStorage.getItem("token") || "",
   isAuthenticated: false,
   isLoading: true,
-  user: "",
+  user: undefined,
 };
 
 export const auth = (state: IAuth = initialState, action: Action): IAuth => {
@@ -18,8 +18,9 @@ export const auth = (state: IAuth = initialState, action: Action): IAuth => {
         isLoading: false,
         user: payload,
       };
-    case ActionTypes.LOGOUT:
     case ActionTypes.AUTH_ERROR:
+    case ActionTypes.ACCOUNT_DELETED:
+    case ActionTypes.LOGOUT:
       return {
         ...state,
         token: undefined,

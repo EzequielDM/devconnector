@@ -72,8 +72,8 @@ const ExperienceRules = {
   company: "required|string",
   location: "string",
   from: "required|date",
-  to: "date|required_unless:current,true",
   current: "boolean",
+  to: "date|required_if:current,false",
   description: "string",
 };
 
@@ -82,8 +82,8 @@ const EducationRules = {
   degree: "required|string",
   field: "required|string",
   from: "required|date",
-  to: "date|required_unless:current,true",
   current: "boolean",
+  to: "date|required_if:current,false",
   description: "string",
 };
 
@@ -166,6 +166,9 @@ const Profile = mongoose.model(
         },
         to: {
           type: Date,
+          required: () => {
+            return this.current === false;
+          },
         },
         current: {
           type: Boolean,

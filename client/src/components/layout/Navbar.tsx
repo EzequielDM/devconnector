@@ -1,7 +1,7 @@
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 
-import { faCode, faSignOutAlt, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faCode, faSignOutAlt, faUser, faUsers } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { logout } from "../../actions/auth";
@@ -14,7 +14,12 @@ const Navbar = () => {
     <ul>
       <li>
         <Link to="/dashboard">
-          <FontAwesomeIcon icon={faUser} /> <span className="hide-sm">Dashboard</span>
+          <FontAwesomeIcon icon={faUser} fixedWidth /> <span className="hide-sm">Dashboard</span>
+        </Link>
+      </li>
+      <li>
+        <Link to="/profiles">
+          <FontAwesomeIcon icon={faUsers} fixedWidth /> <span className="hide-sm">Profiles</span>
         </Link>
       </li>
       <li>

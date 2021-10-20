@@ -1,6 +1,5 @@
 import "./App.css";
 
-import * as React from "react";
 // * REDUX
 import { Provider } from "react-redux";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
@@ -17,7 +16,11 @@ import store from "./store";
 import setAuthToken from "./utils/setAuthToken";
 import { useEffect } from "react";
 import PrivateRoute from "./components/routing/PrivateRoute";
-import ProfileForm from "./components/profile/ProfileForm";
+import ProfileForm from "./components/profile-forms/ProfileForm";
+import AddExperience from "./components/profile-forms/AddExperience";
+import AddEducation from "./components/profile-forms/AddEducation";
+import Profiles from "./components/profiles/Profiles";
+import Profile from "./components/profile/Profile";
 
 const App = () => {
   useEffect(() => {
@@ -38,8 +41,12 @@ const App = () => {
             <Switch>
               <Route exact path="/register" component={Register} />
               <Route exact path="/login" component={Login} />
+              <Route exact path="/profiles" component={Profiles} />
               <PrivateRoute exact path="/dashboard" component={Dashboard} />
               <PrivateRoute exact path="/profile/edit" component={ProfileForm} />
+              <PrivateRoute exact path="/profile/addexperience" component={AddExperience} />
+              <PrivateRoute exact path="/profile/addeducation" component={AddEducation} />
+              <Route exact path="/profile/:id" component={Profile} />
             </Switch>
           </section>
         </>

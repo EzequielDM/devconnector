@@ -9,6 +9,15 @@ enum ActionTypes {
   LOGIN_SUCCESS = "LOGIN_SUCCESS",
   GET_PROFILE = "GET_PROFILE",
   PROFILE_ERROR = "PROFILE_ERROR",
+  PROFILE_UPDATE = "PROFILE_UPDATE",
+  ACCOUNT_DELETED = "ACCOUNT_DELETED",
+  GET_PROFILES = "GET_PROFILES",
+  GET_REPOS = "GET_REPOS",
+}
+
+export interface IExperience {
+  title: string;
+  status: string;
 }
 
 export interface IAlert {
@@ -26,32 +35,23 @@ export interface IAuth {
   token?: string;
   isAuthenticated?: boolean;
   isLoading: boolean;
-  user?: string;
+  user?: {
+    _id: string;
+    name: string;
+    avatar: string;
+  };
 }
 
 export interface IUser {
+  _id?: string;
   name?: string;
   email: string;
   password: string;
   age?: string;
 }
 
-/**
- * company,
-    website,
-    location,
-    status,
-    skills,
-    bio,
-    githubusername,
-    youtube,
-    twitter,
-    facebook,
-    linkedin,
-    instagram,
- */
-
 export interface IProfile {
+  _id?: string;
   user: {
     _id: string;
     name: string;
@@ -72,12 +72,14 @@ export interface IProfile {
     instagram?: string;
   };
   experience?: {
+    id?: string;
     title: string;
     company: string;
     from: Date;
     current?: boolean;
   }[];
   education?: {
+    id?: string;
     school: string;
     degree: string;
     field: string;
