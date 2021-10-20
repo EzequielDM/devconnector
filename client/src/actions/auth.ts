@@ -63,6 +63,7 @@ export const login = (formData: IUser) => async (dispatch: Dispatch) => {
     dispatch(setAlert("Logged in successfully!", "success", 1000) as any);
     dispatch<any>(loadUser());
   } catch (err: any) {
+    if (!err.response) return dispatch(setAlert("Server error", "danger") as any);
     if (typeof err.response.data === "string") return dispatch(setAlert(err.response.data, "danger") as any);
 
     const errors = err.response.data.errors;

@@ -1,6 +1,6 @@
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 
 import { faFacebook, faInstagram, faLinkedin, faTwitter, faYoutube } from "@fortawesome/free-brands-svg-icons";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
@@ -12,6 +12,7 @@ import { RootState } from "../../reducers";
 
 const ProfileForm = () => {
   const dispatch = useDispatch();
+  const history = useHistory();
 
   const [formData, setFormData] = useState({
     company: "",
@@ -61,7 +62,7 @@ const ProfileForm = () => {
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    dispatch(updateProfile(formData));
+    dispatch(updateProfile(formData, history));
   };
 
   return (

@@ -20,7 +20,7 @@ export const profile = (state: IProfileState = initialState, action: Action): IP
   const { type, payload } = action;
 
   switch (type) {
-    case ActionTypes.GET_PROFILE:
+    case ActionTypes.PROFILE_UPDATE:
       return {
         ...state,
         profile: payload,
@@ -31,12 +31,30 @@ export const profile = (state: IProfileState = initialState, action: Action): IP
         ...state,
         profile: undefined,
         repos: [],
-        loading: true,
+        loading: false,
       };
     case ActionTypes.PROFILE_ERROR:
       return {
         ...state,
         error: payload,
+        loading: false,
+      };
+    case ActionTypes.GET_PROFILE:
+      return {
+        ...state,
+        profile: payload,
+        loading: false,
+      };
+    case ActionTypes.GET_PROFILES:
+      return {
+        ...state,
+        profiles: payload,
+        loading: false,
+      };
+    case ActionTypes.GET_REPOS:
+      return {
+        ...state,
+        repos: payload,
         loading: false,
       };
     default:

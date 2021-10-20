@@ -8,13 +8,7 @@ const config = require("config");
 const axios = require("axios");
 
 const { User } = require("../../models/User");
-const {
-  Profile,
-  ProfileRegisterRules,
-  ProfileUpdateRules,
-  ExperienceRules,
-  EducationRules,
-} = require("../../models/Profile");
+const { Profile, ProfileRegisterRules, ProfileUpdateRules, ExperienceRules, EducationRules } = require("../../models/Profile");
 
 /**
  * -- All routes related to a user's profile in general, including all basic HTTP methods.
@@ -26,10 +20,7 @@ const {
 // @access   Private
 router.get("/me", auth, async (req, res) => {
   try {
-    const profile = await Profile.findOne({ user: req.user.id }).populate(
-      "user",
-      ["name", "avatar"]
-    );
+    const profile = await Profile.findOne({ user: req.user.id }).populate("user", ["name", "avatar"]);
 
     if (!profile) {
       return res.status(404).json({ errors: { message: ["User not found"] } });
@@ -52,16 +43,7 @@ router.post("/", auth, async (req, res) => {
     return res.status(400).json(valid.errors);
   }
 
-  const {
-    company,
-    website,
-    location,
-    bio,
-    status,
-    githubusername,
-    skills,
-    social,
-  } = req.body;
+  const { company, website, location, bio, status, githubusername, skills, social } = req.body;
 
   //#region Build profile fields obj
   const profileFields = {
@@ -74,8 +56,7 @@ router.post("/", auth, async (req, res) => {
   bio && (profileFields.bio = bio);
   status && (profileFields.status = status);
   githubusername && (profileFields.githubusername = githubusername);
-  skills &&
-    (profileFields.skills = skills.split(",").map((skill) => skill.trim()));
+  skills && (profileFields.skills = skills.split(",").map((skill) => skill.trim()));
   social && (profileFields.social = social);
   //#endregion
 
@@ -113,18 +94,7 @@ router.put("/", auth, async (req, res) => {
     return res.status(400).json(valid.errors);
   }
 
-  const {
-    company,
-    website,
-    location,
-    bio,
-    status,
-    githubusername,
-    skills,
-    social,
-    experience,
-    education,
-  } = req.body;
+  const { company, website, location, bio, status, githubusername, skills, social, experience, education } = req.body;
 
   //#region Build profile fields obj
   const profileFields = {
@@ -137,8 +107,7 @@ router.put("/", auth, async (req, res) => {
   bio && (profileFields.bio = bio);
   status && (profileFields.status = status);
   githubusername && (profileFields.githubusername = githubusername);
-  skills &&
-    (profileFields.skills = skills.split(",").map((skill) => skill.trim()));
+  skills && (profileFields.skills = skills.split(",").map((skill) => skill.trim()));
   social && (profileFields.social = social);
   experience && (profileFields.experience = experience);
   education && (profileFields.education = education);
@@ -156,11 +125,7 @@ router.put("/", auth, async (req, res) => {
         ],
       });
 
-    let profile = await Profile.findOneAndUpdate(
-      { user: req.user.id },
-      { $set: profileFields },
-      { new: true }
-    );
+    let profile = await Profile.findOneAndUpdate({ user: req.user.id }, { $set: profileFields }, { new: true });
 
     return res.status(200).json(profile);
   } catch (e) {
@@ -186,12 +151,9 @@ router.get("/", async (req, res) => {
 // @route    GET api/profile/user/:id
 // @desc     Get user profile by id
 // @access   Public
-router.get("/user/:id", checkID("id"), async (req, res) => {
+router.get("/:id", checkID("id"), async (req, res) => {
   try {
-    let exist = await Profile.findOne({ user: req.params.id }).populate(
-      "user",
-      ["name", "avatar"]
-    );
+    let exist = await Profile.findOne({ user: req.params.id }).populate("user", ["name", "avatar"]);
 
     if (!exist) {
       return res.status(404).json({
@@ -225,8 +187,7 @@ router.delete("/", auth, async (req, res) => {
         },
       });
 
-    if (!exist2)
-      return res.status(400).json({ errors: { id: "User not found" } });
+    if (!exist2) return res.status(400).json({ errors: { id: "User not found" } });
 
     return res.json(exist);
   } catch (error) {
@@ -269,8 +230,7 @@ router.put("/experience", auth, async (req, res) => {
   try {
     let profile = await Profile.findOne({ user: req.user.id });
 
-    if (!profile)
-      return res.status(400).json({ errors: { auth: "Profile not found" } });
+    if (!profile) return res.status(400).json({ errors: { auth: "Profile not found" } });
 
     profile.experience.unshift(experienceFields);
 
@@ -290,8 +250,7 @@ router.delete("/experience", auth, async (req, res) => {
   try {
     let profile = await Profile.findOne({ user: req.user.id });
 
-    if (!profile)
-      return res.status(400).json({ errors: { id: "User not found" } });
+    if (!profile) return res.status(400).json({ errors: { id: "User not found" } });
 
     profile.experience = [];
 
@@ -307,36 +266,29 @@ router.delete("/experience", auth, async (req, res) => {
 // @route       DELETE api/profile/experience/index/:id
 // @desc        Deletes a specific experience based on index
 // @access      Private
-router.delete(
-  "/experience/index/:id",
-  auth,
-  checkID("id"),
-  async (req, res) => {
-    try {
-      let profile = await Profile.findOne({ user: req.user.id });
+router.delete("/experience/index/:id", auth, checkID("id"), async (req, res) => {
+  try {
+    let profile = await Profile.findOne({ user: req.user.id });
 
-      if (!profile)
-        return res.status(400).json({ errors: { id: "User not found" } });
+    if (!profile) return res.status(400).json({ errors: { id: "User not found" } });
 
-      if (!profile.experience[req.params.id])
-        return res.status(400).json({
-          errors: {
-            experience:
-              "Experience not found, did you choose a valid experience?",
-          },
-        });
+    if (!profile.experience[req.params.id])
+      return res.status(400).json({
+        errors: {
+          experience: "Experience not found, did you choose a valid experience?",
+        },
+      });
 
-      profile.experience.splice(req.params.id, 1);
+    profile.experience.splice(req.params.id, 1);
 
-      await profile.save();
+    await profile.save();
 
-      return res.json(profile.experience);
-    } catch (err) {
-      console.error(err.message);
-      return res.status(500).send("Server error");
-    }
+    return res.json(profile.experience);
+  } catch (err) {
+    console.error(err.message);
+    return res.status(500).send("Server error");
   }
-);
+});
 
 // @route       DELETE api/profile/experience/:id
 // @desc        Deletes a specific experienced based on _id
@@ -345,12 +297,9 @@ router.delete("/experience/:id", auth, checkID("id"), async (req, res) => {
   try {
     let profile = await Profile.findOne({ user: req.user.id });
 
-    const index = profile.experience
-      .map((item) => item.id)
-      .indexOf(req.params.id);
+    const index = profile.experience.map((item) => item.id).indexOf(req.params.id);
 
-    if (index < 0)
-      return res.status(400).json({ errors: { id: "Experience not found" } });
+    if (index < 0) return res.status(400).json({ errors: { id: "Experience not found" } });
 
     profile.experience.splice(index, 1);
 
@@ -358,8 +307,7 @@ router.delete("/experience/:id", auth, checkID("id"), async (req, res) => {
 
     return res.json(profile);
   } catch (err) {
-    if (err.kind == "ObjectId")
-      return res.status(400).json({ errors: { id: "Experience not found" } });
+    if (err.kind == "ObjectId") return res.status(400).json({ errors: { id: "Experience not found" } });
     console.error(err.message);
     return res.status(500).send("Server error");
   }
@@ -396,8 +344,7 @@ router.put("/education", auth, async (req, res) => {
   try {
     let profile = await Profile.findOne({ user: req.user.id });
 
-    if (!profile)
-      return res.status(400).json({ errors: { auth: "Profile not found" } });
+    if (!profile) return res.status(400).json({ errors: { auth: "Profile not found" } });
 
     profile.education.unshift(educationFields);
 
@@ -417,8 +364,7 @@ router.delete("/education", auth, async (req, res) => {
   try {
     let profile = await Profile.findOne({ user: req.user.id });
 
-    if (!profile)
-      return res.status(400).json({ errors: { id: "User not found" } });
+    if (!profile) return res.status(400).json({ errors: { id: "User not found" } });
 
     profile.education = [];
 
@@ -431,56 +377,23 @@ router.delete("/education", auth, async (req, res) => {
   }
 });
 
-// @route       DELETE api/profile/experience/index/:id
-// @desc        Deletes a specific experience based on index
-// @access      Private
-router.delete("/education/index/:id", auth, checkID("id"), async (req, res) => {
-  try {
-    let profile = await Profile.findOne({ user: req.user.id });
-
-    if (!profile)
-      return res.status(400).json({ errors: { id: "User not found" } });
-
-    if (!profile.education[req.params.id])
-      return res.status(400).json({
-        errors: {
-          education: "Experience not found, did you choose a valid experience?",
-        },
-      });
-
-    profile.education.splice(req.params.id, 1);
-
-    await profile.save();
-
-    return res.json(profile.education);
-  } catch (err) {
-    console.error(err.message);
-    return res.status(500).send("Server error");
-  }
-});
-
 // @route       DELETE api/profile/experience/:id
 // @desc        Deletes a specific experienced based on _id
 // @access      Private
-router.delete("/experience/:id", auth, checkID("id"), async (req, res) => {
+router.delete("/education/:id", auth, checkID("id"), async (req, res) => {
   try {
     let profile = await Profile.findOne({ user: req.user.id });
 
-    const index = profile.experience
-      .map((item) => item.id)
-      .indexOf(req.params.id);
+    const index = profile.education.map((item) => item.id).indexOf(req.params.id);
 
-    if (index < 0)
-      return res.status(400).json({ errors: { id: "Experience not found" } });
+    if (index < 0) return res.status(400).json({ errors: { id: "Education not found" } });
 
-    profile.experience.splice(index, 1);
+    profile.education.splice(index, 1);
 
     await profile.save();
 
     return res.json(profile);
   } catch (err) {
-    if (err.kind == "ObjectId")
-      return res.status(400).json({ errors: { id: "Experience not found" } });
     console.error(err.message);
     return res.status(500).send("Server error");
   }
@@ -496,9 +409,7 @@ router.delete("/experience/:id", auth, checkID("id"), async (req, res) => {
 // @access      Public
 router.get("/github/:username", async (req, res) => {
   const options = {
-    uri: encodeURI(
-      `https://api.github.com/users/${req.params.username}/repos?per_page=5&sort=created:asc`
-    ),
+    uri: encodeURI(`https://api.github.com/users/${req.params.username}/repos?per_page=5&sort=created:asc`),
     headers: {
       "user-agent": "node.js",
       Authorization: `token ${config.get("githubPAT")}`,
@@ -507,18 +418,12 @@ router.get("/github/:username", async (req, res) => {
 
   try {
     let github = await axios.get(options.uri, options.headers);
-    if (!github)
-      return res
-        .status(400)
-        .json({ errors: { api: "Github API: Invalid user" } });
+    if (!github) return res.status(400).json({ errors: { api: "Github API: Invalid user" } });
 
     return res.json(github.data);
   } catch (err) {
     if (err.response) return res.status(404).json(err.response.data);
-    if (err.request)
-      return res
-        .status(408)
-        .json({ GithubAPI: "Request timed out. Is GitHub down?" });
+    if (err.request) return res.status(408).json({ GithubAPI: "Request timed out. Is GitHub down?" });
     console.error(err.message);
     return res.status(500).send("Server error");
   }
