@@ -1,2 +1,12 @@
 api:
   - routes/api/*
+front-end:
+  - client/src/*
+component:
+  - client/src/components/*
+actions:
+  - client/src/actions/*
+reducers:
+  - client/src/reducers/*
+style:
+  - */*.css
