@@ -166,7 +166,7 @@ img {
 
 .badge {
   font-size: 0.8rem;
-  padding: 0.1rem;
+  padding: 0.25rem;
   text-align: center;
   margin: 0.3rem;
   background: var(--light-color);
@@ -210,6 +210,14 @@ img {
 .badge-danger,
 .alert-danger {
   background: var(--danger-color);
+  color: #fff;
+}
+
+.btn-warning,
+.bg-warning,
+.badge-warning,
+.alert-warning {
+  background: var(--warning-color);
   color: #fff;
 }
 
@@ -406,7 +414,7 @@ button {
 }
 
 .profile-top img {
-  width: 250px;
+  width: 12rem;
 }
 
 .profile-top .icons a {

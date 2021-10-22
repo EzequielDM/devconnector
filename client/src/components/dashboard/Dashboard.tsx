@@ -19,14 +19,13 @@ const Dashboard = () => {
   }, [dispatch]);
 
   const name = useSelector((state: RootState) => state.profile.profile?.user.name);
-  const isAuthLoading = useSelector((state: RootState) => state.auth.isLoading);
   const isProfileLoading = useSelector((state: RootState) => state.profile.loading);
   const experience = useSelector((state: RootState) => state.profile.profile?.experience);
   const education = useSelector((state: RootState) => state.profile.profile?.education);
 
   const isNewUser = useSelector((state: RootState) => state.profile.profile?.status) === "Hey! I'm new to DevConnector";
 
-  if (isProfileLoading || isAuthLoading) return <Spinner />;
+  if (isProfileLoading) return <Spinner />;
 
   return (
     <>
