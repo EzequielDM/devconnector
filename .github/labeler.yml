@@ -9,4 +9,4 @@ actions:
 reducers:
   - client/src/reducers/*
 style:
-  - */*.css
+  - client/**/*.css
