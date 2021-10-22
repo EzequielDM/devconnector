@@ -1,6 +1,9 @@
+import { faTrash, faPencilAlt } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import dayjs from "dayjs";
 import PropTypes from "prop-types";
 import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
 import { deleteEducation } from "../../actions/profile";
 
 const Education = ({ education }: any) => {
@@ -16,9 +19,12 @@ const Education = ({ education }: any) => {
           {dayjs(edu.from).format("YYYY/MM/DD")} - {edu.to ? dayjs(edu.to).format("YYYY/MM/DD") : " Now"}
         </td>
         <td>
-          <button onClick={() => dispatch(deleteEducation(edu._id))} className="btn btn-danger">
-            Delete
+          <button onClick={() => dispatch(deleteEducation(edu._id))} className="btn btn-danger" style={{ borderRadius: "10px 20px" }}>
+            <FontAwesomeIcon icon={faTrash} />
           </button>
+          <Link to={`/profile/education/${edu._id}`} className="btn btn-warning" style={{ borderRadius: "10px 20px" }}>
+            <FontAwesomeIcon icon={faPencilAlt} />
+          </Link>
         </td>
       </tr>
     ));

@@ -14,9 +14,7 @@ const Profiles = () => {
     dispatch(getProfiles());
   }, [dispatch]);
 
-  const authLoading = useSelector((state: RootState) => state.auth.isLoading);
-  const profileLoading = useSelector((state: RootState) => state.profile.loading);
-  const isLoading = authLoading && profileLoading;
+  const isLoading = useSelector((state: RootState) => state.profile.loading);
 
   const profiles = useSelector((state: RootState) => state.profile.profiles);
 

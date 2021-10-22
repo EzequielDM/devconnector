@@ -11,15 +11,19 @@ export const getCurrentProfile = () => async (dispatch: Dispatch) => {
 
     dispatch({ type: ActionTypes.GET_PROFILE, payload: res.data });
   } catch (err: any) {
+    const statusText = err.response.statusText ? err.response.statusText : "Server error";
+    const status = err.response.status ? err.response.status : 500;
     dispatch({
       type: ActionTypes.PROFILE_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status },
+      payload: { msg: statusText, status: status },
     });
   }
 };
 
 // Get all user profiles
 export const getProfiles = () => async (dispatch: Dispatch) => {
+  dispatch({ type: ActionTypes.CLEAR_PROFILE });
+
   try {
     const res = await api.get("/profile");
 
@@ -34,20 +38,27 @@ export const getProfileByID = (id: string) => async (dispatch: Dispatch) => {
 
     dispatch({ type: ActionTypes.GET_PROFILE, payload: res.data });
   } catch (err: any) {
+    const statusText = err.response && err.response.statusText ? err.response.statusText : "Server error";
+    const status = err.response && err.response.status ? err.response.status : 500;
+
     dispatch(setAlert("Error while trying to load page", "danger", 1500) as any);
-    dispatch({ type: ActionTypes.PROFILE_ERROR, payload: { msg: err.response.statusText, status: err.response.status } });
+    dispatch({ type: ActionTypes.PROFILE_ERROR, payload: { msg: statusText, status: status } });
   }
 };
 
 // Get all github repos
 export const getGithubRepos = (username: string) => async (dispatch: Dispatch) => {
+  if (username === "") return;
   try {
     const res = await api.get(`/profile/github/${username}`);
 
     dispatch({ type: ActionTypes.GET_REPOS, payload: res.data });
   } catch (err: any) {
+    const statusText = err.response.statusText ? err.response.statusText : "Server error";
+    const status = err.response.status ? err.response.status : 500;
+
     dispatch(setAlert("Error while trying to get repos", "danger") as any);
-    dispatch({ type: ActionTypes.PROFILE_ERROR, payload: { msg: err.response.statusText, status: err.response.status } });
+    dispatch({ type: ActionTypes.PROFILE_ERROR, payload: { msg: statusText, status: status } });
   }
 };
 

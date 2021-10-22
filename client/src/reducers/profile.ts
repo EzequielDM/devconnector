@@ -1,10 +1,10 @@
 import ActionTypes, { IProfile } from "../actions/types";
-import { Action } from "../actions/types";
+import { Action, IRepo } from "../actions/types";
 
 interface IProfileState {
   profile?: IProfile;
   profiles: IProfile[];
-  repos: string[];
+  repos: IRepo[];
   loading: boolean;
   error: {};
 }
@@ -21,16 +21,10 @@ export const profile = (state: IProfileState = initialState, action: Action): IP
 
   switch (type) {
     case ActionTypes.PROFILE_UPDATE:
+    case ActionTypes.GET_PROFILE:
       return {
         ...state,
         profile: payload,
-        loading: false,
-      };
-    case ActionTypes.LOGOUT:
-      return {
-        ...state,
-        profile: undefined,
-        repos: [],
         loading: false,
       };
     case ActionTypes.PROFILE_ERROR:
@@ -38,12 +32,13 @@ export const profile = (state: IProfileState = initialState, action: Action): IP
         ...state,
         error: payload,
         loading: false,
+        profile: undefined,
       };
-    case ActionTypes.GET_PROFILE:
+    case ActionTypes.CLEAR_PROFILE:
       return {
         ...state,
-        profile: payload,
-        loading: false,
+        profile: undefined,
+        repos: [],
       };
     case ActionTypes.GET_PROFILES:
       return {

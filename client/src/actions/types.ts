@@ -13,6 +13,7 @@ enum ActionTypes {
   ACCOUNT_DELETED = "ACCOUNT_DELETED",
   GET_PROFILES = "GET_PROFILES",
   GET_REPOS = "GET_REPOS",
+  CLEAR_PROFILE = "CLEAR_PROFILE",
 }
 
 export interface IExperience {
@@ -71,22 +72,50 @@ export interface IProfile {
     linkedin?: string;
     instagram?: string;
   };
-  experience?: {
-    id?: string;
-    title: string;
-    company: string;
-    from: Date;
-    current?: boolean;
-  }[];
-  education?: {
-    id?: string;
-    school: string;
-    degree: string;
-    field: string;
-    from: Date;
-    current?: boolean;
-  }[];
+  experience?: IExperience[];
+  education?: IEducation[];
   date?: Date;
+}
+
+export interface IExperience {
+  _id?: string;
+  title: string;
+  company: string;
+  from: Date;
+  current?: boolean;
+  to?: Date;
+  description?: string;
+}
+
+export interface IEducation {
+  _id?: string;
+  school: string;
+  degree: string;
+  field?: string;
+  from: Date;
+  current?: boolean;
+  to?: Date;
+  description?: String;
+}
+
+export interface IRepo {
+  id: string;
+  name: string;
+  full_name: string;
+  private: boolean;
+  owner: {
+    login: string;
+    url: string;
+  };
+  html_url: string;
+  description: string;
+  fork: boolean;
+  created_at: Date;
+  updated_at: Date;
+  stargazers_count: number;
+  watchers_count: number;
+  forks_count: number;
+  language: string;
 }
 
 export interface IAPIError {
