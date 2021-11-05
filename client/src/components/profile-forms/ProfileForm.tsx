@@ -7,10 +7,15 @@ import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { loadUser } from "../../actions/auth";
-import { getCurrentProfile, updateProfile } from "../../actions/profile";
+import { getCurrentProfile, updateProfile, getProfileByID, updateProfileAdmin } from "../../actions/profile";
 import { RootState } from "../../reducers";
 
-const ProfileForm = () => {
+interface Props {
+  admin?: boolean;
+  match?: any;
+}
+
+const ProfileForm = ({ admin, match }: Props) => {
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -34,16 +39,17 @@ const ProfileForm = () => {
   const { company, website, location, status, skills, bio, githubusername, social } = formData;
 
   const profile = useSelector((state: RootState) => state.profile.profile);
-  profile && profile.skills && (profile.skills = profile.skills?.toString());
+  const match_id = match.params.id;
 
   useEffect(() => {
     dispatch(loadUser());
-    if (!profile) dispatch(getCurrentProfile());
+    if (!profile && !admin) dispatch(getCurrentProfile());
+    if (!profile && admin) dispatch(getProfileByID(match_id));
     if (profile)
       setFormData((f) => {
-        return { ...f, ...(profile as any) };
+        return { ...f, ...(profile as any), skills: (profile as any).skills.toString() };
       });
-  }, [dispatch, profile]);
+  }, [admin, dispatch, match_id, profile]);
 
   const [displaySocialInputs, setDisplaySocialInputs] = useState(false);
 
@@ -62,7 +68,9 @@ const ProfileForm = () => {
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    dispatch(updateProfile(formData, history));
+    if (admin) {
+      dispatch(updateProfileAdmin(match_id, formData, history));
+    } else dispatch(updateProfile(formData, history));
   };
 
   return (
@@ -150,6 +158,11 @@ const ProfileForm = () => {
         )}
 
         <input type="submit" className="btn btn-primary my-1" />
+        {admin && (
+          <Link className="btn btn-danger my-1" to={`/profile/delete/${match_id}`}>
+            Delete user
+          </Link>
+        )}
         <Link className="btn btn-light my-1" to="/dashboard">
           Go Back
         </Link>

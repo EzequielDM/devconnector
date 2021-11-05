@@ -14,11 +14,9 @@ enum ActionTypes {
   GET_PROFILES = "GET_PROFILES",
   GET_REPOS = "GET_REPOS",
   CLEAR_PROFILE = "CLEAR_PROFILE",
-}
-
-export interface IExperience {
-  title: string;
-  status: string;
+  GET_POSTS = "GET_POSTS",
+  POST_ERROR = "POST_ERROR",
+  UPDATE_LIKES = "UPDATE_LIKES",
 }
 
 export interface IAlert {
@@ -40,6 +38,7 @@ export interface IAuth {
     _id: string;
     name: string;
     avatar: string;
+    role: string;
   };
 }
 
@@ -57,12 +56,13 @@ export interface IProfile {
     _id: string;
     name: string;
     avatar: string;
+    role: string;
   };
   company?: string;
   website?: string;
   location?: string;
   status?: string;
-  skills?: string;
+  skills?: string[];
   bio?: string;
   githubusername?: string;
   social?: {
@@ -78,10 +78,11 @@ export interface IProfile {
 }
 
 export interface IExperience {
-  _id?: string;
+  _id: string;
   title: string;
   company: string;
   from: Date;
+  location: string;
   current?: boolean;
   to?: Date;
   description?: string;
@@ -95,7 +96,7 @@ export interface IEducation {
   from: Date;
   current?: boolean;
   to?: Date;
-  description?: String;
+  description?: string;
 }
 
 export interface IRepo {
@@ -127,6 +128,32 @@ export interface IAPIError {
       errors: Object;
     };
   };
+}
+
+export interface IPost {
+  _id: string;
+  user: string;
+  name: string;
+  avatar: string;
+  text: string;
+  likes: ILike[];
+  comments: IComment[];
+  date: Date;
+}
+
+export interface IComment {
+  _id: string;
+  user: string;
+  name: string;
+  avatar: string;
+  text: string;
+  date: Date;
+}
+
+export interface ILike {
+  _id: string;
+  user: string;
+  date: Date;
 }
 
 export default ActionTypes;

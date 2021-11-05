@@ -1,23 +1,33 @@
-import { useState, ChangeEvent, FormEvent } from "react";
+import { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCodeBranch } from "@fortawesome/free-solid-svg-icons";
-import { useDispatch } from "react-redux";
-import { addExperience } from "../../actions/profile";
+import { useDispatch, useSelector } from "react-redux";
+import { addExperience, editExperience } from "../../actions/profile";
+import { RootState } from "../../reducers";
+import dayjs from "dayjs";
 
-const AddExperience = () => {
+const AddExperience = ({ match }: any) => {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const [formData, setFormData] = useState({
-    title: "",
-    company: "",
-    location: "",
-    from: "",
-    current: false,
-    to: "",
-    description: "",
-  });
+  const exp = useSelector((state: RootState) => state.profile.profile?.experience?.filter((exp) => exp._id === match.params.id));
+  const experience = exp && exp[0];
+
+  const [formData, setFormData] = useState({ title: "", company: "", location: "", from: "", current: false, to: "", description: "" });
+
+  useEffect(() => {
+    if (experience) {
+      setFormData((f) => {
+        return {
+          ...f,
+          ...experience,
+          from: dayjs(experience.from).format("YYYY-MM-DD"),
+          to: experience.to ? dayjs(experience.to).format("YYYY-MM-DD") : "",
+        };
+      });
+    }
+  }, [experience]);
 
   const { title, company, location, from, current, to, description } = formData;
 
@@ -28,7 +38,9 @@ const AddExperience = () => {
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
 
-    dispatch(addExperience(formData, history));
+    if (match.params.id) {
+      dispatch(editExperience({ ...formData, from: new Date(formData.from), to: new Date(formData.to), _id: match.params.id }, history));
+    } else dispatch(addExperience({ ...formData, from: new Date(formData.from), to: new Date(formData.to), _id: match.params.id }, history));
   };
 
   return (

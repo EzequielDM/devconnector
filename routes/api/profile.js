@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const auth = require("../../middleware/auth");
+const admin = require("../../middleware/admin");
 const checkID = require("../../middleware/checkID");
 const Validator = require("validatorjs");
 const config = require("config");
@@ -20,7 +21,7 @@ const { Profile, ProfileRegisterRules, ProfileUpdateRules, ExperienceRules, Educ
 // @access   Private
 router.get("/me", auth, async (req, res) => {
   try {
-    const profile = await Profile.findOne({ user: req.user.id }).populate("user", ["name", "avatar"]);
+    const profile = await Profile.findOne({ user: req.user.id }).populate("user", ["name", "avatar", "role"]);
 
     if (!profile) {
       return res.status(404).json({ errors: { message: ["User not found"] } });
@@ -139,7 +140,7 @@ router.put("/", auth, async (req, res) => {
 // @access   Public
 router.get("/", async (req, res) => {
   try {
-    let profiles = await Profile.find().populate("user", ["name", "avatar"]);
+    let profiles = await Profile.find().populate("user", ["name", "avatar", "role"]);
 
     return res.json(profiles);
   } catch (error) {
@@ -153,7 +154,7 @@ router.get("/", async (req, res) => {
 // @access   Public
 router.get("/:id", checkID("id"), async (req, res) => {
   try {
-    let exist = await Profile.findOne({ user: req.params.id }).populate("user", ["name", "avatar"]);
+    let exist = await Profile.findOne({ user: req.params.id }).populate("user", ["name", "avatar", "role"]);
 
     if (!exist) {
       return res.status(404).json({
@@ -178,12 +179,86 @@ router.get("/:id", checkID("id"), async (req, res) => {
 router.delete("/", auth, async (req, res) => {
   try {
     let exist = await Profile.findOneAndDelete({ user: req.user.id });
-    let exist2 = await User.findOneAndDelete({ id: req.user.id });
+    let exist2 = await User.findOneAndDelete({ _id: req.user.id });
 
     if (!exist)
       return res.status(400).json({
         errors: {
           id: "Profile not found, have you created one yet?",
+        },
+      });
+
+    if (!exist2) return res.status(400).json({ errors: { id: "User not found" } });
+
+    return res.json(exist);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send("Server error");
+  }
+});
+
+// @route     PUT api/profile/:id
+// @desc      Edit a user's profile
+// @access    Admin
+router.put("/edit/:id", admin, checkID("id"), async (req, res) => {
+  let valid = new Validator(req.body, ProfileUpdateRules);
+  if (!valid.passes()) {
+    console.error(valid.errors);
+    return res.status(400).json(valid.errors);
+  }
+
+  const { company, website, location, bio, status, githubusername, skills, social, experience, education } = req.body;
+
+  //#region Build profile fields obj
+  const profileFields = {};
+
+  company && (profileFields.company = company);
+  website && (profileFields.website = website);
+  location && (profileFields.location = location);
+  bio && (profileFields.bio = bio);
+  status && (profileFields.status = status);
+  githubusername && (profileFields.githubusername = githubusername);
+  skills && (profileFields.skills = skills.split(",").map((skill) => skill.trim()));
+  social && (profileFields.social = social);
+  experience && (profileFields.experience = experience);
+  education && (profileFields.education = education);
+  //#endregion
+
+  try {
+    let exists = await Profile.findOne({ user: req.params.id });
+
+    if (!exists)
+      return res.status(404).json({
+        errors: {
+          user: "Profile not found",
+        },
+      });
+
+    let profile = await Profile.findOneAndUpdate({ user: req.params.id }, { $set: { ...profileFields } }, { new: true });
+
+    console.log(`Updated profile: ${profile}`);
+    return res.status(200).json(profile);
+  } catch (e) {
+    console.error(e.message);
+    return res.status(500).send("Server error");
+  }
+});
+
+// @route     DELETE api/profile/:id
+// @desc      Delete own user & profile
+// @access    Private
+router.delete("/:id", admin, checkID("id"), async (req, res) => {
+  try {
+    let admincheck = await User.findById(req.params.id);
+    if (admincheck.role === "admin") return res.sendStatus(403);
+
+    let exist = await Profile.findOneAndDelete({ user: req.params.id });
+    let exist2 = await User.findOneAndDelete({ _id: req.params.id });
+
+    if (!exist)
+      return res.status(400).json({
+        errors: {
+          id: "Profile not found",
         },
       });
 
@@ -263,33 +338,6 @@ router.delete("/experience", auth, async (req, res) => {
   }
 });
 
-// @route       DELETE api/profile/experience/index/:id
-// @desc        Deletes a specific experience based on index
-// @access      Private
-router.delete("/experience/index/:id", auth, checkID("id"), async (req, res) => {
-  try {
-    let profile = await Profile.findOne({ user: req.user.id });
-
-    if (!profile) return res.status(400).json({ errors: { id: "User not found" } });
-
-    if (!profile.experience[req.params.id])
-      return res.status(400).json({
-        errors: {
-          experience: "Experience not found, did you choose a valid experience?",
-        },
-      });
-
-    profile.experience.splice(req.params.id, 1);
-
-    await profile.save();
-
-    return res.json(profile.experience);
-  } catch (err) {
-    console.error(err.message);
-    return res.status(500).send("Server error");
-  }
-});
-
 // @route       DELETE api/profile/experience/:id
 // @desc        Deletes a specific experienced based on _id
 // @access      Private
@@ -309,6 +357,48 @@ router.delete("/experience/:id", auth, checkID("id"), async (req, res) => {
   } catch (err) {
     if (err.kind == "ObjectId") return res.status(400).json({ errors: { id: "Experience not found" } });
     console.error(err.message);
+    return res.status(500).send("Server error");
+  }
+});
+
+// @route       PUT api/profile/experience/:id
+// @desc        Edits a specific experienced based on _id
+// @access      Private
+router.put("/experience/:id", auth, checkID("id"), async (req, res) => {
+  let valid = new Validator(req.body, ExperienceRules);
+  if (!valid.passes()) return res.status(400).json(valid.errors);
+
+  const { title, company, location, from, to, current, description } = req.body;
+
+  //#region Build experienceFields obj
+  const experienceFields = {};
+
+  title && (experienceFields.title = title);
+  company && (experienceFields.company = company);
+  location && (experienceFields.location = location);
+  from && (experienceFields.from = from);
+  to && (experienceFields.to = to);
+  current && (experienceFields.current = current);
+  description && (experienceFields.description = description);
+  //#endregion
+
+  try {
+    let profile = await Profile.findOne({ user: req.user.id });
+
+    if (!profile) return res.status(400).json({ errors: { auth: "Profile not found" } });
+
+    const index = profile.experience.map((exp) => exp._id.toString()).indexOf(req.params.id);
+    if (index < 0) return res.status(404).json({ errors: { experience: "Experience not found" } });
+
+    console.log(`index`, index);
+
+    profile.experience[index] = experienceFields;
+
+    await profile.save();
+
+    return res.json(profile);
+  } catch (error) {
+    console.error(error);
     return res.status(500).send("Server error");
   }
 });
@@ -395,6 +485,48 @@ router.delete("/education/:id", auth, checkID("id"), async (req, res) => {
     return res.json(profile);
   } catch (err) {
     console.error(err.message);
+    return res.status(500).send("Server error");
+  }
+});
+
+// @route       PUT api/profile/education/:id
+// @desc        Edits a specific education based on _id
+// @access      Private
+router.put("/education/:id", auth, checkID("id"), async (req, res) => {
+  let valid = new Validator(req.body, EducationRules);
+  if (!valid.passes()) return res.status(400).json(valid.errors);
+
+  const { school, degree, field, from, to, current, description } = req.body;
+
+  //#region Build educationFields obj
+  const educationFields = {};
+
+  school && (educationFields.school = school);
+  degree && (educationFields.degree = degree);
+  field && (educationFields.field = field);
+  from && (educationFields.from = from);
+  to && (educationFields.to = to);
+  current && (educationFields.current = current);
+  description && (educationFields.description = description);
+  //#endregion
+
+  try {
+    let profile = await Profile.findOne({ user: req.user.id });
+
+    if (!profile) return res.status(400).json({ errors: { auth: "Profile not found" } });
+
+    const index = profile.education.map((exp) => exp._id.toString()).indexOf(req.params.id);
+    if (index < 0) return res.status(404).json({ errors: { education: "Education not found" } });
+
+    console.log(`index`, index);
+
+    profile.education[index] = educationFields;
+
+    await profile.save();
+
+    return res.json(profile);
+  } catch (error) {
+    console.error(error);
     return res.status(500).send("Server error");
   }
 });

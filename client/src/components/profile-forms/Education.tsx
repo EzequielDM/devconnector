@@ -1,12 +1,16 @@
 import { faTrash, faPencilAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import dayjs from "dayjs";
-import PropTypes from "prop-types";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { deleteEducation } from "../../actions/profile";
+import { IEducation } from "../../actions/types";
 
-const Education = ({ education }: any) => {
+interface Props {
+  education?: IEducation[];
+}
+
+const Education = ({ education }: Props) => {
   const dispatch = useDispatch();
 
   const educations =
@@ -45,10 +49,6 @@ const Education = ({ education }: any) => {
       </table>
     </>
   );
-};
-
-Education.propTypes = {
-  education: PropTypes.array.isRequired,
 };
 
 export default Education;

@@ -20,13 +20,13 @@ const ProfileRepo = ({ repo: { name, html_url, description, forks_count, stargaz
       <div>
         <ul>
           <li className="badge badge-primary">
-            <FontAwesomeIcon icon={faStar} /> {stargazers_count}
+            <FontAwesomeIcon icon={faStar} /> <span>{stargazers_count}</span>
           </li>
           <li className="badge badge-dark">
-            <FontAwesomeIcon icon={faEye} /> {watchers_count}
+            <FontAwesomeIcon icon={faEye} /> <span>{watchers_count}</span>
           </li>
           <li className="badge badge-light">
-            <FontAwesomeIcon icon={faCodeBranch} /> {forks_count}
+            <FontAwesomeIcon icon={faCodeBranch} /> <span>{forks_count}</span>
           </li>
         </ul>
       </div>

@@ -44,8 +44,8 @@ const Dashboard = () => {
       ) : (
         <>
           <DashboardActions />
-          <Experience experience={experience as any} />
-          <Education education={education as any} />
+          <Experience experience={experience} />
+          <Education education={education} />
 
           <div className="my-2">
             <button className="btn btn-danger" onClick={() => dispatch(deleteAccount())}>
