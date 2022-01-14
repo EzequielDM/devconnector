@@ -109,7 +109,7 @@ router.get("/", async (req, res) => {
 // @access   Private
 router.delete("/", auth, async (req, res) => {
   try {
-    let exist = await User.findOneAndDelete({ id: req.user.id });
+    let exist = await User.findByIdAndDelete(req.user.id);
 
     if (!exist) return res.status(400).json({ errors: { id: "User not found" } });
 

@@ -5,10 +5,7 @@ const { User } = require("../models/User");
 module.exports = async (req, res, next) => {
   const token = req.header("x-auth-token");
 
-  if (!token)
-    return res
-      .status(401)
-      .json({ errors: { message: ["Invalid auth token (empty)"] } });
+  if (!token) return res.status(401).json({ errors: { message: ["Invalid auth token (empty)"] } });
 
   try {
     const decoded = jwt.verify(token, config.get("jwtSecret"));
@@ -19,10 +16,7 @@ module.exports = async (req, res, next) => {
         errors: { message: ["Invalid auth token (user deleted)"] },
       });
 
-    if (exist.role !== "admin")
-      return res
-        .status(403)
-        .json({ errors: { message: ["Unauthorized user"] } });
+    if (exist.role !== "admin") return res.status(403).json({ errors: { message: ["Unauthorized user"] } });
 
     req.user = decoded.user;
     next();

@@ -1,13 +1,18 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGraduationCap } from "@fortawesome/free-solid-svg-icons";
-import { ChangeEvent, FormEvent, useState } from "react";
-import { useDispatch } from "react-redux";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { addEducation } from "../../actions/profile";
+import { addEducation, editEducation } from "../../actions/profile";
+import { RootState } from "../../reducers";
+import dayjs from "dayjs";
 
-const AddEducation = () => {
+const AddEducation = ({ match }: any) => {
   const dispatch = useDispatch();
   const history = useHistory();
+
+  const edu = useSelector((state: RootState) => state.profile.profile?.education?.filter((edu) => edu._id === match.params.id));
+  const education = edu && edu[0];
 
   const [formData, setFormData] = useState({
     school: "",
@@ -19,6 +24,19 @@ const AddEducation = () => {
     description: "",
   });
 
+  useEffect(() => {
+    if (education) {
+      setFormData((f) => {
+        return {
+          ...f,
+          ...education,
+          from: dayjs(education.from).format("YYYY-MM-DD"),
+          to: education.to ? dayjs(education.to).format("YYYY-MM-DD") : "",
+        };
+      });
+    }
+  }, [education]);
+
   const { school, degree, field, from, current, to, description } = formData;
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -28,7 +46,9 @@ const AddEducation = () => {
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
 
-    dispatch(addEducation(formData, history));
+    if (match.params.id) {
+      dispatch(editEducation({ ...formData, from: new Date(formData.from), to: new Date(formData.to), _id: match.params.id }, history));
+    } else dispatch(addEducation({ ...formData, from: new Date(formData.from), to: new Date(formData.to), _id: match.params.id }, history));
   };
 
   return (
@@ -47,7 +67,7 @@ const AddEducation = () => {
           <input type="text" placeholder="* Degree or Certificate" name="degree" value={degree} onChange={onChange} required />
         </div>
         <div className="form-group">
-          <input type="text" placeholder="Field Of Study" name="field" value={field} onChange={onChange} />
+          <input type="text" placeholder="* Field Of Study" name="field" value={field} onChange={onChange} required />
         </div>
         <div className="form-group">
           <h4>From Date</h4>

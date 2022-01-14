@@ -2,7 +2,7 @@ import ActionTypes, { Action, IAlert } from "../actions/types";
 
 const initialState: IAlert[] = [];
 
-const alert = (state = initialState, action: Action) => {
+export const alert = (state = initialState, action: Action) => {
   const { type, payload } = action;
 
   switch (type) {
@@ -15,5 +15,3 @@ const alert = (state = initialState, action: Action) => {
       return state;
   }
 };
-
-export default alert;

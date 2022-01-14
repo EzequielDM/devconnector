@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getGithubRepos, getProfileByID } from "../../actions/profile";
 import { RootState } from "../../reducers";
 import Spinner from "../layout/Spinner";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import ProfileTop from "./ProfileTop";
 import ProfileAbout from "./ProfileAbout";
 import ProfileExperience from "./ProfileExperience";
@@ -11,6 +11,7 @@ import ProfileEducation from "./ProfileEducation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import ProfileRepo from "./ProfileRepo";
+
 const Profile = ({ match }: any) => {
   const dispatch = useDispatch();
 
@@ -18,6 +19,8 @@ const Profile = ({ match }: any) => {
   const auth = useSelector((state: RootState) => state.auth);
   const ghub = useSelector((state: RootState) => state.profile.profile?.githubusername);
   const repos = useSelector((state: RootState) => state.profile.repos);
+
+  const history = useHistory();
 
   useEffect(() => {
     dispatch(getProfileByID(match.params.id) as any);
@@ -28,12 +31,17 @@ const Profile = ({ match }: any) => {
 
   return (
     <>
-      <Link to="/profiles" className="btn btn-light">
-        Back to profiles
-      </Link>
+      <a href="#!" className="btn btn-light" onClick={history.goBack}>
+        Go back
+      </a>
       {auth.isAuthenticated && auth.user && auth.user._id === profile.user._id && (
         <Link to="/profile/edit" className="btn btn-dark">
           Edit profile
+        </Link>
+      )}
+      {auth.user?.role === "admin" && (
+        <Link to={`/profile/edit/${profile.user._id}`} className="btn btn-warning">
+          Manage user profile
         </Link>
       )}
 

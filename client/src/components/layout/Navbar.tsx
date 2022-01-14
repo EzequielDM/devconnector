@@ -1,7 +1,13 @@
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
-import { faCode, faSignOutAlt, faUser, faUsers } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCode,
+  faNewspaper,
+  faSignOutAlt,
+  faUser,
+  faUsers,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { logout } from "../../actions/auth";
@@ -9,6 +15,9 @@ import { RootState } from "../../reducers";
 
 const Navbar = () => {
   const dispatch = useDispatch();
+
+  const avatar = useSelector((state: RootState) => state.auth.user?.avatar);
+  const _id = useSelector((state: RootState) => state.auth.user?._id);
 
   const authLinks = (
     <ul>
@@ -23,18 +32,28 @@ const Navbar = () => {
         </Link>
       </li>
       <li>
+        <Link to="/posts">
+          <FontAwesomeIcon icon={faNewspaper} fixedWidth /> <span className="hide-sm">Posts</span>
+        </Link>
+      </li>
+      <li>
         <a onClick={() => dispatch<any>(logout())} href="#!">
           <FontAwesomeIcon icon={faSignOutAlt} /> <span className="hide-sm">Logout</span>
         </a>
+      </li>
+      <li>
+        <Link to={`/profile/${_id}`} style={{ padding: "0px", margin: "0px" }}>
+          <img src={avatar} alt="Profile in navbar" className="round-img navbar-pfp" />
+        </Link>
       </li>
     </ul>
   );
 
   const guestLinks = (
     <ul>
-      <li>
-        <Link to="/profiles">Developers</Link>
-      </li>
+      <Link to="/profiles">
+        <FontAwesomeIcon icon={faUsers} fixedWidth /> <span className="hide-sm">Developers</span>
+      </Link>
       <li>
         <Link to="/register">Register</Link>
       </li>

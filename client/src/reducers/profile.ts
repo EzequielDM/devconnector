@@ -3,7 +3,7 @@ import { Action, IRepo } from "../actions/types";
 
 interface IProfileState {
   profile?: IProfile;
-  profiles: IProfile[];
+  profiles?: IProfile[];
   repos: IRepo[];
   loading: boolean;
   error: {};
@@ -26,6 +26,7 @@ export const profile = (state: IProfileState = initialState, action: Action): IP
         ...state,
         profile: payload,
         loading: false,
+        profiles: undefined,
       };
     case ActionTypes.PROFILE_ERROR:
       return {

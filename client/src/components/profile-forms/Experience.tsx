@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 import { IExperience } from "../../actions/types";
 
 interface Props {
-  experience: IExperience[];
+  experience?: IExperience[];
 }
 
 const Experience = ({ experience }: Props) => {
