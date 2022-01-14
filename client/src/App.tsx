@@ -24,6 +24,7 @@ import Profiles from "./components/profiles/Profiles";
 import Profile from "./components/profile/Profile";
 import ProfileDelete from "./components/profile-forms/ProfileDelete";
 import Posts from "./components/posts/Posts";
+import Post from "./components/posts/Post";
 
 const App = () => {
   useEffect(() => {
@@ -73,7 +74,12 @@ const App = () => {
                 component={(props: any) => <AddEducation {...props} />}
               />
               <PrivateRoute exact path="/posts" component={Posts} />
-              <Route exact path="/profile/:id" component={Profile} />
+              <PrivateRoute
+                exact
+                path="/posts/:id"
+                component={(props: any) => <Post {...props} />}
+              />
+              <Route exact path="/profile/:id" component={(props: any) => <Profile {...props} />} />
             </Switch>
           </section>
         </>

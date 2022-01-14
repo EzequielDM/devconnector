@@ -1,6 +1,6 @@
 import ActionTypes, { Action, IPost } from "../actions/types";
 
-interface IPostState {
+export interface IPostState {
   posts?: IPost[];
   post?: IPost;
   loading: boolean;
@@ -13,7 +13,7 @@ const initialState = {
   error: {},
 };
 
-const post = (state: IPostState = initialState, action: Action): IPostState => {
+export const post = (state: IPostState = initialState, action: Action): IPostState => {
   const { type, payload } = action;
 
   switch (type) {
@@ -22,6 +22,19 @@ const post = (state: IPostState = initialState, action: Action): IPostState => {
         ...state,
         posts: payload,
         loading: false,
+      };
+
+    case ActionTypes.GET_POST:
+      return {
+        ...state,
+        post: payload,
+        loading: false,
+      };
+    case ActionTypes.CLEAR_POST:
+      return {
+        ...state,
+        post: undefined,
+        loading: true,
       };
 
     case ActionTypes.POST_ERROR:
@@ -41,10 +54,36 @@ const post = (state: IPostState = initialState, action: Action): IPostState => {
           ),
         loading: false,
       };
+    case ActionTypes.DELETE_POST:
+      return {
+        ...state,
+        posts: state.posts?.filter((post) => post._id !== payload),
+        loading: false,
+      };
+
+    case ActionTypes.ADD_POST:
+      return {
+        ...state,
+        posts: state.posts && [...state.posts, payload],
+        loading: false,
+      };
+    case ActionTypes.ADD_COMMENT:
+      return {
+        ...state,
+        post: state.post && { ...state.post, comments: [payload.comment, ...state.post.comments] },
+        loading: false,
+      };
+    case ActionTypes.DELETE_COMMENT:
+      return {
+        ...state,
+        post: state.post && {
+          ...state.post,
+          comments: state.post.comments.filter((comment) => comment._id !== payload),
+        },
+        loading: false,
+      };
 
     default:
       return state;
   }
 };
-
-export default post;

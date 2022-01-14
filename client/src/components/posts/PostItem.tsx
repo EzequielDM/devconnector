@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faThumbsDown, faThumbsUp, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../reducers";
-import { dislikePost, likePost } from "../../actions/post";
+import { deletePost, dislikePost, likePost, clearPost } from "../../actions/post";
 interface Props {
   post: IPost;
 }
@@ -16,7 +16,7 @@ const Post = ({ post: { _id, avatar, comments, date, likes, name, text, user } }
   const dispatch = useDispatch();
 
   return (
-    <div className="post bg-white p-1 my-1">
+    <div className="post bg-white p-1 my-1" id={_id}>
       <div>
         <Link to="/profile">
           <img className="round-img" src={avatar} alt="profile" />
@@ -26,24 +26,24 @@ const Post = ({ post: { _id, avatar, comments, date, likes, name, text, user } }
       <div>
         <p className="my-1">{text}</p>
         <p className="post-date">Posted on {dayjs(date).format("MMMM DD, YYYY")}</p>
-        <button
-          type="button"
-          className="btn btn-light"
-          onClick={(e) => dispatch(likePost(_id)) as any}>
+        <button type="button" className="btn btn-light" onClick={(e) => dispatch(likePost(_id))}>
           <FontAwesomeIcon icon={faThumbsUp} /> {likes.length > 0 && <span>{likes.length}</span>}
         </button>
-        <button
-          type="button"
-          className="btn btn-light"
-          onClick={(e) => dispatch(dislikePost(_id)) as any}>
+        <button type="button" className="btn btn-light" onClick={(e) => dispatch(dislikePost(_id))}>
           <FontAwesomeIcon icon={faThumbsDown} />
         </button>
-        <Link to={`/post/${_id}`} className="btn btn-primary">
+        <Link
+          to={`/posts/${_id}`}
+          className="btn btn-primary"
+          onClick={() => dispatch(clearPost() as any)}>
           Discussion{" "}
           {comments.length > 0 && <span className="comment-count">{comments.length}</span>}
         </Link>
         {authUser && authUser === user && (
-          <button type="button" className="btn btn-danger">
+          <button
+            type="button"
+            className="btn btn-danger"
+            onClick={(e) => dispatch(deletePost(_id))}>
             <FontAwesomeIcon icon={faTimesCircle} />
           </button>
         )}

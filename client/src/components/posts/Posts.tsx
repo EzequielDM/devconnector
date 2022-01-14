@@ -6,6 +6,7 @@ import Spinner from "../layout/Spinner";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import PostItem from "./PostItem";
+import PostForm from "./PostForm";
 
 const Posts = () => {
   const dispatch = useDispatch();
@@ -26,7 +27,15 @@ const Posts = () => {
         <FontAwesomeIcon icon={faUserCircle} /> Welcome to the community!
       </p>
 
-      {/* PostForm */}
+      {/* AddPostForm */}
+      <div className="post-form">
+        <div className="bg-primary p">
+          <h3>Say Something...</h3>
+        </div>
+        <PostForm />
+      </div>
+
+      {/* Posts */}
       <div className="posts">
         {posts && posts.map((post) => <PostItem key={post._id} post={post} />)}
       </div>
