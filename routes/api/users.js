@@ -72,7 +72,7 @@ router.post("/", noauth, async (req, res) => {
 
     jwt.sign(
       payload,
-      config.get("jwtSecret"),
+      process.env.JWT_SECRET || config.get("jwtSecret"),
       {
         // @FIXME This should be 3600 in production!
         expiresIn: 360000,
