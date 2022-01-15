@@ -3,7 +3,7 @@
 
 Fully fledged social networking site aimed for developers looking to make connections.
 
-Currently under development.
+Currently has all basic features and functionalities desired, more advanced implementations will be added soon.
 Code adapted on the go based on Brad Traversy's MERN Stack Front To Back course on Udemy.
 
 There were many errors present or bad practices, so I'm trying to fix all that while I advance on the course.
@@ -22,16 +22,7 @@ There were many errors present or bad practices, so I'm trying to fix all that w
 - Many other things I changed while I was going that I can't remember right now, differences can be compared using a GitComparer if you will
 
 # TODO:
-- Add full profile system
-  - Create page to view profile
-  - Create page to manage education
-  - Crate page to manage experiences
-  - Add admin features
-- Add user search and user list
-- Add post system
-  - Add skeleton
-  - Add liking system
-  - Add comment system
-  - Add admin features
+- Add user search
+- Add post management for admins
   
   As I advance in the MERN stack and acquire more experience, I'll be updating this.
