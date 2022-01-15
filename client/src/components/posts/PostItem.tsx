@@ -18,7 +18,7 @@ const Post = ({ post: { _id, avatar, comments, date, likes, name, text, user } }
   return (
     <div className="post bg-white p-1 my-1" id={_id}>
       <div>
-        <Link to="/profile">
+        <Link to={`/profile/${user}`}>
           <img className="round-img" src={avatar} alt="profile" />
           <h4>{name}</h4>
         </Link>
