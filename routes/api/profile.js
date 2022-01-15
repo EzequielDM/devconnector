@@ -591,7 +591,7 @@ router.get("/github/:username", async (req, res) => {
     ),
     headers: {
       "user-agent": "node.js",
-      Authorization: `token ${config.get("githubPAT")}`,
+      Authorization: `token ${process.env.GITHUB_PAT || config.get("githubPAT")}`,
     },
   };
 

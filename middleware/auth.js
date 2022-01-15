@@ -5,13 +5,10 @@ const { User } = require("../models/User");
 module.exports = async (req, res, next) => {
   const token = req.header("x-auth-token");
 
-  if (!token)
-    return res
-      .status(401)
-      .json({ errors: { message: ["Invalid auth token (empty)"] } });
+  if (!token) return res.status(401).json({ errors: { message: ["Invalid auth token (empty)"] } });
 
   try {
-    const decoded = jwt.verify(token, config.get("jwtSecret"));
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || config.get("jwtSecret"));
 
     let exist = await User.findById(decoded.user.id);
     if (!exist)
