@@ -25,6 +25,7 @@ import Profile from "./components/profile/Profile";
 import ProfileDelete from "./components/profile-forms/ProfileDelete";
 import Posts from "./components/posts/Posts";
 import Post from "./components/posts/Post";
+import NotFound from "./components/layout/NotFound";
 
 const App = () => {
   useEffect(() => {
@@ -80,6 +81,7 @@ const App = () => {
                 component={(props: any) => <Post {...props} />}
               />
               <Route exact path="/profile/:id" component={(props: any) => <Profile {...props} />} />
+              <Route component={NotFound} />
             </Switch>
           </section>
         </>
