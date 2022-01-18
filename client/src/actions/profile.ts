@@ -5,6 +5,12 @@ import { setAlert } from "./alert";
 import ActionTypes, { IEducation } from "./types";
 import { IExperience } from "./types";
 
+/**
+ * TODO: Implement error handling method for automating error messages using type predicates to find out data types.
+ * * fn(err: any, (type: string)="danger", (time: number)=3000): boolean {}
+ * ! Need to handle AxiosErrror, ParseError and generalized errors; will create a test environment for this later on.
+ */
+
 // get current user profile
 export const getCurrentProfile = () => async (dispatch: Dispatch) => {
   try {
@@ -39,7 +45,8 @@ export const getProfileByID = (id: string) => async (dispatch: Dispatch) => {
 
     dispatch({ type: ActionTypes.GET_PROFILE, payload: res.data });
   } catch (err: any) {
-    const statusText = err.response && err.response.statusText ? err.response.statusText : "Server error";
+    const statusText =
+      err.response && err.response.statusText ? err.response.statusText : "Server error";
     const status = err.response && err.response.status ? err.response.status : 500;
 
     dispatch(setAlert("Error while trying to load page", "danger", 1500) as any);
@@ -55,11 +62,20 @@ export const getGithubRepos = (username: string) => async (dispatch: Dispatch) =
 
     dispatch({ type: ActionTypes.GET_REPOS, payload: res.data });
   } catch (err: any) {
-    const statusText = err.response.statusText ? err.response.statusText : "Server error";
-    const status = err.response.status ? err.response.status : 500;
+    /* Found out that there is no better way to predicate types than checking for error values as any 
+        error can occur at any moment so errors can't be type inferred.
+        Should've understood this before, don't know why I thought that using any was bad practice.
+        Will redo all trycatch blocks to handle responses properly, finally some good error handling.
+        Probably will do a helper function for dispatching error messages.
+    */
+
+    // Is AxiosError
+    if (err.response) {
+      // GH User does not exist, server responded successfully
+      if (err.response.status === 404 && err.response.data.message === "Not Found") return;
+    }
 
     dispatch(setAlert("Error while trying to get repos", "danger") as any);
-    dispatch({ type: ActionTypes.PROFILE_ERROR, payload: { msg: statusText, status: status } });
   }
 };
 
@@ -72,7 +88,8 @@ export const updateProfile = (formData: any, history: any) => async (dispatch: D
     dispatch(setAlert("Profile updated", "success", 2000) as any);
     history.push("/dashboard");
   } catch (err: any) {
-    if (typeof err.response.data === "string") return dispatch(setAlert(err.response.data, "danger") as any);
+    if (err.response && typeof err.response.data === "string")
+      return dispatch(setAlert(err.response.data, "danger") as any);
 
     const errors = err.response.data.errors;
     if (!errors) return dispatch(setAlert("Server error", "danger") as any);
@@ -86,33 +103,42 @@ export const updateProfile = (formData: any, history: any) => async (dispatch: D
 
     errorMessages.forEach((error) => dispatch(setAlert(error, "danger") as any));
   }
+};
+
+// clear profile info
+export const clearProfile = () => async (dispatch: Dispatch) => {
+  dispatch({
+    type: ActionTypes.CLEAR_PROFILE,
+  });
 };
 
 // Add experience to user profile
-export const addExperience = (formData: IExperience, history: any) => async (dispatch: Dispatch) => {
-  try {
-    const res = await api.put("/profile/experience", formData);
+export const addExperience =
+  (formData: IExperience, history: any) => async (dispatch: Dispatch) => {
+    try {
+      const res = await api.put("/profile/experience", formData);
 
-    dispatch({ type: ActionTypes.PROFILE_UPDATE, payload: res.data });
-    dispatch(setAlert("Experience added", "success", 2000) as any);
-    history.push("/dashboard");
-  } catch (err: any) {
-    console.error(err);
-    if (typeof err.response.data === "string") return dispatch(setAlert(err.response.data, "danger") as any);
+      dispatch({ type: ActionTypes.PROFILE_UPDATE, payload: res.data });
+      dispatch(setAlert("Experience added", "success", 2000) as any);
+      history.push("/dashboard");
+    } catch (err: any) {
+      console.error(err);
+      if (typeof err.response.data === "string")
+        return dispatch(setAlert(err.response.data, "danger") as any);
 
-    const errors = err.response.data.errors;
-    if (!errors) return dispatch(setAlert("Server error", "danger") as any);
-    let errorMessages: string[] = [];
+      const errors = err.response.data.errors;
+      if (!errors) return dispatch(setAlert("Server error", "danger") as any);
+      let errorMessages: string[] = [];
 
-    const getKeys = Object.keys(errors) as unknown as string[];
+      const getKeys = Object.keys(errors) as unknown as string[];
 
-    getKeys.forEach((element) => {
-      errors[element].forEach((element: string) => errorMessages.push(element));
-    });
+      getKeys.forEach((element) => {
+        errors[element].forEach((element: string) => errorMessages.push(element));
+      });
 
-    errorMessages.forEach((error) => dispatch(setAlert(error, "danger") as any));
-  }
-};
+      errorMessages.forEach((error) => dispatch(setAlert(error, "danger") as any));
+    }
+  };
 
 // Add experience to user profile
 export const addEducation = (formData: IEducation, history: any) => async (dispatch: Dispatch) => {
@@ -123,7 +149,8 @@ export const addEducation = (formData: IEducation, history: any) => async (dispa
     dispatch(setAlert("Education added", "success", 2000) as any);
     history.push("/dashboard");
   } catch (err: any) {
-    if (typeof err.response.data === "string") return dispatch(setAlert(err.response.data, "danger") as any);
+    if (typeof err.response.data === "string")
+      return dispatch(setAlert(err.response.data, "danger") as any);
 
     const errors = err.response.data.errors;
     if (!errors) return dispatch(setAlert("Server error", "danger") as any);
@@ -140,29 +167,31 @@ export const addEducation = (formData: IEducation, history: any) => async (dispa
 };
 
 // Edit experience
-export const editExperience = (formData: IExperience, history: any) => async (dispatch: Dispatch) => {
-  try {
-    const res = await api.put(`/profile/experience/${formData._id}`, formData);
+export const editExperience =
+  (formData: IExperience, history: any) => async (dispatch: Dispatch) => {
+    try {
+      const res = await api.put(`/profile/experience/${formData._id}`, formData);
 
-    dispatch({ type: ActionTypes.PROFILE_UPDATE, payload: res.data });
-    dispatch(setAlert("Experience updated", "success", 2000) as any);
-    history.push("/dashboard");
-  } catch (err: any) {
-    if (typeof err.response.data === "string") return dispatch(setAlert(err.response.data, "danger") as any);
+      dispatch({ type: ActionTypes.PROFILE_UPDATE, payload: res.data });
+      dispatch(setAlert("Experience updated", "success", 2000) as any);
+      history.push("/dashboard");
+    } catch (err: any) {
+      if (typeof err.response.data === "string")
+        return dispatch(setAlert(err.response.data, "danger") as any);
 
-    const errors = err.response.data.errors;
-    if (!errors) return dispatch(setAlert("Server error", "danger") as any);
-    let errorMessages: string[] = [];
+      const errors = err.response.data.errors;
+      if (!errors) return dispatch(setAlert("Server error", "danger") as any);
+      let errorMessages: string[] = [];
 
-    const getKeys = Object.keys(errors) as unknown as string[];
+      const getKeys = Object.keys(errors) as unknown as string[];
 
-    getKeys.forEach((element) => {
-      errors[element].forEach((element: string) => errorMessages.push(element));
-    });
+      getKeys.forEach((element) => {
+        errors[element].forEach((element: string) => errorMessages.push(element));
+      });
 
-    errorMessages.forEach((error) => dispatch(setAlert(error, "danger") as any));
-  }
-};
+      errorMessages.forEach((error) => dispatch(setAlert(error, "danger") as any));
+    }
+  };
 
 // Edit education
 export const editEducation = (formData: IEducation, history: any) => async (dispatch: Dispatch) => {
@@ -173,7 +202,8 @@ export const editEducation = (formData: IEducation, history: any) => async (disp
     dispatch(setAlert("Education updated", "success", 2000) as any);
     history.push("/dashboard");
   } catch (err: any) {
-    if (typeof err.response.data === "string") return dispatch(setAlert(err.response.data, "danger") as any);
+    if (typeof err.response.data === "string")
+      return dispatch(setAlert(err.response.data, "danger") as any);
 
     const errors = err.response.data.errors;
     if (!errors) return dispatch(setAlert("Server error", "danger") as any);
@@ -197,7 +227,8 @@ export const deleteExperience = (id: any) => async (dispatch: Dispatch) => {
     dispatch({ type: ActionTypes.PROFILE_UPDATE, payload: res.data });
     dispatch(setAlert("Experience removed", "success", 2000) as any);
   } catch (err: any) {
-    if (typeof err.response.data === "string") return dispatch(setAlert(err.response.data, "danger") as any);
+    if (typeof err.response.data === "string")
+      return dispatch(setAlert(err.response.data, "danger") as any);
 
     const errors = err.response.data.errors;
     if (!errors) return dispatch(setAlert("Server error", "danger") as any);
@@ -221,7 +252,8 @@ export const deleteEducation = (id: any) => async (dispatch: Dispatch) => {
     dispatch({ type: ActionTypes.PROFILE_UPDATE, payload: res.data });
     dispatch(setAlert("Education removed", "success", 2000) as any);
   } catch (err: any) {
-    if (typeof err.response.data === "string") return dispatch(setAlert(err.response.data, "danger") as any);
+    if (typeof err.response.data === "string")
+      return dispatch(setAlert(err.response.data, "danger") as any);
 
     const errors = err.response.data.errors;
     if (!errors) return dispatch(setAlert("Server error", "danger") as any);
@@ -247,7 +279,8 @@ export const deleteAccount = () => async (dispatch: Dispatch) => {
     dispatch({ type: ActionTypes.ACCOUNT_DELETED, payload: res.data });
     dispatch(setAlert("Account deleted", "warning") as any);
   } catch (err: any) {
-    if (typeof err.response.data === "string") return dispatch(setAlert(err.response.data, "danger") as any);
+    if (typeof err.response.data === "string")
+      return dispatch(setAlert(err.response.data, "danger") as any);
 
     const errors = err.response.data.errors;
     if (!errors) return dispatch(setAlert("Server error", "danger") as any);
@@ -266,29 +299,31 @@ export const deleteAccount = () => async (dispatch: Dispatch) => {
 // SECTION Admin stuff
 
 // update current user profile
-export const updateProfileAdmin = (id: string, formData: any, history: any) => async (dispatch: Dispatch) => {
-  try {
-    const res = await api.put(`/profile/edit/${id}`, formData);
+export const updateProfileAdmin =
+  (id: string, formData: any, history: any) => async (dispatch: Dispatch) => {
+    try {
+      const res = await api.put(`/profile/edit/${id}`, formData);
 
-    dispatch({ type: ActionTypes.GET_PROFILE, payload: res.data });
-    dispatch(setAlert("Profile updated", "success", 2000) as any);
-    history.push(`/profile/${id}`);
-  } catch (err: any) {
-    if (typeof err.response.data === "string") return dispatch(setAlert(err.response.data, "danger") as any);
+      dispatch({ type: ActionTypes.GET_PROFILE, payload: res.data });
+      dispatch(setAlert("Profile updated", "success", 2000) as any);
+      history.push(`/profile/${id}`);
+    } catch (err: any) {
+      if (typeof err.response.data === "string")
+        return dispatch(setAlert(err.response.data, "danger") as any);
 
-    const errors = err.response.data.errors;
-    if (!errors) return dispatch(setAlert("Server error", "danger") as any);
-    let errorMessages: string[] = [];
+      const errors = err.response.data.errors;
+      if (!errors) return dispatch(setAlert("Server error", "danger") as any);
+      let errorMessages: string[] = [];
 
-    const getKeys = Object.keys(errors) as unknown as string[];
+      const getKeys = Object.keys(errors) as unknown as string[];
 
-    getKeys.forEach((element) => {
-      errors[element].forEach((element: string) => errorMessages.push(element));
-    });
+      getKeys.forEach((element) => {
+        errors[element].forEach((element: string) => errorMessages.push(element));
+      });
 
-    errorMessages.forEach((error) => dispatch(setAlert(error, "danger") as any));
-  }
-};
+      errorMessages.forEach((error) => dispatch(setAlert(error, "danger") as any));
+    }
+  };
 
 // Delete account and profile
 export const deleteAccountAdmin = (id: string) => async (dispatch: Dispatch) => {
@@ -299,8 +334,10 @@ export const deleteAccountAdmin = (id: string) => async (dispatch: Dispatch) => 
 
     res.data.length > 0 && dispatch(setAlert("Account deleted", "warning") as any);
   } catch (err: any) {
-    if (err.response && err.response.status === 401) return dispatch(setAlert(err.response.statusText, "danger") as any);
-    if (typeof err.response.data === "string") return dispatch(setAlert(err.response.data, "danger") as any);
+    if (err.response && err.response.status === 401)
+      return dispatch(setAlert(err.response.statusText, "danger") as any);
+    if (typeof err.response.data === "string")
+      return dispatch(setAlert(err.response.data, "danger") as any);
 
     const errors = err.response.data.errors;
     if (!errors) return dispatch(setAlert("Server error", "danger") as any);

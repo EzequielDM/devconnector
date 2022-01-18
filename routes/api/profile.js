@@ -601,7 +601,7 @@ router.get("/github/:username", async (req, res) => {
 
     return res.json(github.data);
   } catch (err) {
-    if (err.response) return res.status(404).json(err.response.data);
+    if (err.response) return res.status(404).json({ errors: { data: err.response.data } });
     if (err.request)
       return res.status(408).json({ GithubAPI: "Request timed out. Is GitHub down?" });
     console.error(err.message);
