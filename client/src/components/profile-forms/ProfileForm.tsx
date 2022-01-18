@@ -2,12 +2,23 @@ import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 
-import { faFacebook, faInstagram, faLinkedin, faTwitter, faYoutube } from "@fortawesome/free-brands-svg-icons";
+import {
+  faFacebook,
+  faInstagram,
+  faLinkedin,
+  faTwitter,
+  faYoutube,
+} from "@fortawesome/free-brands-svg-icons";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { loadUser } from "../../actions/auth";
-import { getCurrentProfile, updateProfile, getProfileByID, updateProfileAdmin } from "../../actions/profile";
+import {
+  getCurrentProfile,
+  updateProfile,
+  getProfileByID,
+  updateProfileAdmin,
+} from "../../actions/profile";
 import { RootState } from "../../reducers";
 
 interface Props {
@@ -97,32 +108,73 @@ const ProfileForm = ({ admin, match }: Props) => {
           <small className="form-text">Give us an idea of where you are at in your career</small>
         </div>
         <div className="form-group">
-          <input type="text" placeholder="Company" name="company" value={company} onChange={onChange} />
+          <input
+            type="text"
+            placeholder="Company"
+            name="company"
+            value={company}
+            onChange={onChange}
+          />
           <small className="form-text">Could be your own company or one you work for</small>
         </div>
         <div className="form-group">
-          <input type="text" placeholder="Website" name="website" value={website} onChange={onChange} />
+          <input
+            type="text"
+            placeholder="Website"
+            name="website"
+            value={website}
+            onChange={onChange}
+          />
           <small className="form-text">Could be your own or a company website</small>
         </div>
         <div className="form-group">
-          <input type="text" placeholder="Location" name="location" value={location} onChange={onChange} />
+          <input
+            type="text"
+            placeholder="Location"
+            name="location"
+            value={location}
+            onChange={onChange}
+          />
           <small className="form-text">City & state suggested (eg. Boston, MA)</small>
         </div>
         <div className="form-group">
-          <input type="text" placeholder="* Skills" name="skills" value={skills} onChange={onChange} />
-          <small className="form-text">Please use comma separated values (eg. HTML,CSS,JavaScript,PHP)</small>
+          <input
+            type="text"
+            placeholder="* Skills"
+            name="skills"
+            value={skills}
+            onChange={onChange}
+          />
+          <small className="form-text">
+            Please use comma separated values (eg. HTML,CSS,JavaScript,PHP)
+          </small>
         </div>
         <div className="form-group">
-          <input type="text" placeholder="Github Username" name="githubusername" value={githubusername} onChange={onChange} />
-          <small className="form-text">If you want your latest repos and a Github link, include your username</small>
+          <input
+            type="text"
+            placeholder="Github Username"
+            name="githubusername"
+            value={githubusername}
+            onChange={onChange}
+          />
+          <small className="form-text">
+            If you want your latest repos and a Github link, include your username
+          </small>
         </div>
         <div className="form-group">
-          <textarea placeholder="A short bio of yourself" name="bio" value={bio} onChange={(e) => onChange(e as any)}></textarea>
+          <textarea
+            placeholder="A short bio of yourself"
+            name="bio"
+            value={bio}
+            onChange={(e) => onChange(e as any)}></textarea>
           <small className="form-text">Tell us a little about yourself</small>
         </div>
 
         <div className="my-2">
-          <button type="button" className="btn btn-light" onClick={() => setDisplaySocialInputs(!displaySocialInputs)}>
+          <button
+            type="button"
+            className="btn btn-light"
+            onClick={() => setDisplaySocialInputs(!displaySocialInputs)}>
             Add Social Network Links
           </button>
           <span>Optional</span>
@@ -132,32 +184,64 @@ const ProfileForm = ({ admin, match }: Props) => {
           <>
             <div className="form-group social-input">
               <FontAwesomeIcon icon={faTwitter} size="2x" fixedWidth />
-              <input type="text" placeholder="Twitter URL" name="twitter" value={social.twitter} onChange={onChangeSocial} />
+              <input
+                type="text"
+                placeholder="Twitter URL"
+                name="twitter"
+                value={social.twitter}
+                onChange={onChangeSocial}
+              />
             </div>
 
             <div className="form-group social-input">
               <FontAwesomeIcon icon={faFacebook} size="2x" fixedWidth />
-              <input type="text" placeholder="Facebook URL" name="facebook" value={social.facebook} onChange={onChangeSocial} />
+              <input
+                type="text"
+                placeholder="Facebook URL"
+                name="facebook"
+                value={social.facebook}
+                onChange={onChangeSocial}
+              />
             </div>
 
             <div className="form-group social-input">
               <FontAwesomeIcon icon={faYoutube} size="2x" fixedWidth />
-              <input type="text" placeholder="YouTube URL" name="youtube" value={social.youtube} onChange={onChangeSocial} />
+              <input
+                type="text"
+                placeholder="YouTube URL"
+                name="youtube"
+                value={social.youtube}
+                onChange={onChangeSocial}
+              />
             </div>
 
             <div className="form-group social-input">
               <FontAwesomeIcon icon={faLinkedin} size="2x" fixedWidth />
-              <input type="text" placeholder="Linkedin URL" name="linkedin" value={social.linkedin} onChange={onChangeSocial} />
+              <input
+                type="text"
+                placeholder="Linkedin URL"
+                name="linkedin"
+                value={social.linkedin}
+                onChange={onChangeSocial}
+              />
             </div>
 
             <div className="form-group social-input">
               <FontAwesomeIcon icon={faInstagram} size="2x" fixedWidth />
-              <input type="text" placeholder="Instagram URL" name="instagram" value={social.instagram ?? ""} onChange={onChangeSocial} />
+              <input
+                type="text"
+                placeholder="Instagram URL"
+                name="instagram"
+                value={social.instagram ?? ""}
+                onChange={onChangeSocial}
+              />
             </div>
           </>
         )}
 
-        <input type="submit" className="btn btn-primary my-1" />
+        <Link to="/dashboard">
+          <input type="submit" className="btn btn-primary my-1" />
+        </Link>
         {admin && (
           <Link className="btn btn-danger my-1" to={`/profile/delete/${match_id}`}>
             Delete user
