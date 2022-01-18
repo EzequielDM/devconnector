@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getGithubRepos, getProfileByID } from "../../actions/profile";
 import { RootState } from "../../reducers";
 import Spinner from "../layout/Spinner";
-import { Link, useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import ProfileTop from "./ProfileTop";
 import ProfileAbout from "./ProfileAbout";
 import ProfileExperience from "./ProfileExperience";
@@ -20,8 +20,6 @@ const Profile = ({ match }: any) => {
   const ghub = useSelector((state: RootState) => state.profile.profile?.githubusername);
   const repos = useSelector((state: RootState) => state.profile.repos);
 
-  const history = useHistory();
-
   useEffect(() => {
     dispatch(getProfileByID(match.params.id) as any);
     dispatch(getGithubRepos(ghub || "") as any);
@@ -31,9 +29,9 @@ const Profile = ({ match }: any) => {
 
   return (
     <>
-      <a href="#!" className="btn btn-light" onClick={history.goBack}>
+      <Link to="/profiles" className="btn btn-light">
         Go back
-      </a>
+      </Link>
       {auth.isAuthenticated && auth.user && auth.user._id === profile.user._id && (
         <Link to="/profile/edit" className="btn btn-dark">
           Edit profile
@@ -78,13 +76,19 @@ const Profile = ({ match }: any) => {
           <h2 className="text-primary my-1">
             <FontAwesomeIcon icon={faGithub} /> GitHub Repos
           </h2>
-          {repos && repos.filter((repo) => repo.fork === false).filter((repo) => repo.name !== profile.githubusername).length > 0 ? (
+          {repos &&
+          repos
+            .filter((repo) => repo.fork === false)
+            .filter((repo) => repo.name !== profile.githubusername).length > 0 ? (
             repos
               .filter((repo) => repo.fork === false)
               .filter((repo) => repo.name !== profile.githubusername)
               .map((repo) => <ProfileRepo key={repo.id} repo={repo} />)
           ) : (
-            <h4>{profile.githubusername ? profile.githubusername : profile.user.name} doesn't have any repositories.</h4>
+            <h4>
+              {profile.githubusername ? profile.githubusername : profile.user.name} doesn't have any
+              repositories.
+            </h4>
           )}
         </div>
       </div>

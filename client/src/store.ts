@@ -1,4 +1,5 @@
 import { applyMiddleware, createStore } from "redux";
+import { composeWithDevTools } from "redux-devtools-extension";
 import thunk from "redux-thunk";
 
 import { rootReducer } from "./reducers";
@@ -8,7 +9,13 @@ const initialState = {};
 
 const middleware = [thunk];
 
-const store = createStore(rootReducer, initialState, applyMiddleware(...middleware));
+const store = createStore(
+  rootReducer,
+  initialState,
+  process.env.ENVIRONMENT === "production"
+    ? applyMiddleware(...middleware)
+    : composeWithDevTools(applyMiddleware(...middleware))
+);
 
 /**
  * ! Set up a storage subscription listener
