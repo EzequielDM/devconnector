@@ -72,7 +72,7 @@ export const getGithubRepos = (username: string) => async (dispatch: Dispatch) =
     // Is AxiosError
     if (err.response) {
       // GH User does not exist, server responded successfully
-      if (err.response.status === 404 && err.response.data.message === "Not Found") return;
+      if (err.response.status === 404 && err.response.data.errors.message === "Not Found") return;
     }
 
     dispatch(setAlert("Error while trying to get repos", "danger") as any);
@@ -86,7 +86,6 @@ export const updateProfile = (formData: any, history: any) => async (dispatch: D
 
     dispatch({ type: ActionTypes.GET_PROFILE, payload: res.data });
     dispatch(setAlert("Profile updated", "success", 2000) as any);
-    history.push("/dashboard");
   } catch (err: any) {
     if (err.response && typeof err.response.data === "string")
       return dispatch(setAlert(err.response.data, "danger") as any);
