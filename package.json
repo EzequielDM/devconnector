@@ -46,7 +46,7 @@
     "fortawesome": "0.0.1-security",
     "gravatar": "^1.8.2",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.0.7",
+    "mongoose": "^6.12.0",
     "normalize-url": "^4.5.1",
     "react-dayjs": "^0.3.2",
     "typescript": "^4.4.3",
