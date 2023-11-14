@@ -128,7 +128,7 @@ export const addPost = (post: IPost) => async (dispatch: Dispatch) => {
 
     const errors = err.response.data.errors;
     if (!errors) return dispatch(setAlert("Server error", "danger") as any);
-    let errorMessages: string[] = [];
+    const errorMessages: string[] = [];
 
     const getKeys = Object.keys(errors) as unknown as string[];
 
@@ -157,7 +157,7 @@ export const addComment = (_id: string, text: string) => async (dispatch: Dispat
 
     const errors = err.response.data.errors;
     if (!errors) return dispatch(setAlert("Server error", "danger") as any);
-    let errorMessages: string[] = [];
+    const errorMessages: string[] = [];
 
     const getKeys = Object.keys(errors) as unknown as string[];
 
@@ -186,7 +186,7 @@ export const deleteComment = (_id: string, commentID: string) => async (dispatch
 
     const errors = err.response.data.errors;
     if (!errors) return dispatch(setAlert("Server error", "danger") as any);
-    let errorMessages: string[] = [];
+    const errorMessages: string[] = [];
 
     const getKeys = Object.keys(errors) as unknown as string[];
 

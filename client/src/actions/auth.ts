@@ -37,7 +37,7 @@ export const register = (formData: IUser) => async (dispatch: Dispatch) => {
 
     const errors = err.response.data.errors;
     if (!errors) return dispatch(setAlert("Server error", "danger") as any);
-    let errorMessages: string[] = [];
+    const errorMessages: string[] = [];
 
     const getKeys = Object.keys(errors) as unknown as string[];
 
@@ -68,7 +68,7 @@ export const login = (formData: IUser) => async (dispatch: Dispatch) => {
 
     const errors = err.response.data.errors;
     if (!errors) return dispatch(setAlert("Server error", "danger") as any);
-    let errorMessages: string[] = [];
+    const errorMessages: string[] = [];
 
     const getKeys = Object.keys(errors) as unknown as string[];
 

@@ -4,7 +4,7 @@ export interface IPostState {
   posts?: IPost[];
   post?: IPost;
   loading: boolean;
-  error: {};
+  error: Record<string, unknown>;
 }
 
 const initialState = {

@@ -79,9 +79,11 @@ const ProfileForm = ({ admin, match }: Props) => {
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
+    console.log("Called just to be sure");
+
     if (admin) {
       dispatch(updateProfileAdmin(match_id, formData, history));
-    } else dispatch(updateProfile(formData, history));
+    } else dispatch(updateProfile(formData));
   };
 
   return (
@@ -239,9 +241,7 @@ const ProfileForm = ({ admin, match }: Props) => {
           </>
         )}
 
-        <Link to="/dashboard">
-          <input type="submit" className="btn btn-primary my-1" />
-        </Link>
+        <input type="submit" className="btn btn-primary my-1" />
         {admin && (
           <Link className="btn btn-danger my-1" to={`/profile/delete/${match_id}`}>
             Delete user

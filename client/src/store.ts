@@ -32,7 +32,7 @@ let currentState: any = store.getState();
 
 store.subscribe(() => {
   // Save the value from our previous state before updating to check if there are differences
-  let previousState: any = currentState;
+  const previousState: any = currentState;
   currentState = store.getState();
 
   if (previousState.auth.token !== currentState.auth.token) {

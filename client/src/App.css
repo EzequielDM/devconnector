@@ -45,7 +45,7 @@ img {
   margin-top: 20px;
 }
 
-@keyframes spinner {
+@frames spinner {
   to {
     transform: rotate(360deg);
   }

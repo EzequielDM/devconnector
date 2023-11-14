@@ -35,7 +35,9 @@ export const getProfiles = () => async (dispatch: Dispatch) => {
     const res = await api.get("/profile");
 
     dispatch({ type: ActionTypes.GET_PROFILES, payload: res.data });
-  } catch (err: any) {}
+  } catch (err: any) {
+    console.log(`Failed to fetch user profiles (profile.ts#getProfiles())`);
+  }
 };
 
 // Get user profile by ID
@@ -80,7 +82,7 @@ export const getGithubRepos = (username: string) => async (dispatch: Dispatch) =
 };
 
 // update current user profile
-export const updateProfile = (formData: any, history: any) => async (dispatch: Dispatch) => {
+export const updateProfile = (formData: any) => async (dispatch: Dispatch) => {
   try {
     const res = await api.put("/profile", formData);
 
@@ -92,7 +94,7 @@ export const updateProfile = (formData: any, history: any) => async (dispatch: D
 
     const errors = err.response.data.errors;
     if (!errors) return dispatch(setAlert("Server error", "danger") as any);
-    let errorMessages: string[] = [];
+    const errorMessages: string[] = [];
 
     const getKeys = Object.keys(errors) as unknown as string[];
 
@@ -127,7 +129,7 @@ export const addExperience =
 
       const errors = err.response.data.errors;
       if (!errors) return dispatch(setAlert("Server error", "danger") as any);
-      let errorMessages: string[] = [];
+      const errorMessages: string[] = [];
 
       const getKeys = Object.keys(errors) as unknown as string[];
 
@@ -153,7 +155,7 @@ export const addEducation = (formData: IEducation, history: any) => async (dispa
 
     const errors = err.response.data.errors;
     if (!errors) return dispatch(setAlert("Server error", "danger") as any);
-    let errorMessages: string[] = [];
+    const errorMessages: string[] = [];
 
     const getKeys = Object.keys(errors) as unknown as string[];
 
@@ -180,7 +182,7 @@ export const editExperience =
 
       const errors = err.response.data.errors;
       if (!errors) return dispatch(setAlert("Server error", "danger") as any);
-      let errorMessages: string[] = [];
+      const errorMessages: string[] = [];
 
       const getKeys = Object.keys(errors) as unknown as string[];
 
@@ -206,7 +208,7 @@ export const editEducation = (formData: IEducation, history: any) => async (disp
 
     const errors = err.response.data.errors;
     if (!errors) return dispatch(setAlert("Server error", "danger") as any);
-    let errorMessages: string[] = [];
+    const errorMessages: string[] = [];
 
     const getKeys = Object.keys(errors) as unknown as string[];
 
@@ -231,7 +233,7 @@ export const deleteExperience = (id: any) => async (dispatch: Dispatch) => {
 
     const errors = err.response.data.errors;
     if (!errors) return dispatch(setAlert("Server error", "danger") as any);
-    let errorMessages: string[] = [];
+    const errorMessages: string[] = [];
 
     const getKeys = Object.keys(errors) as unknown as string[];
 
@@ -256,7 +258,7 @@ export const deleteEducation = (id: any) => async (dispatch: Dispatch) => {
 
     const errors = err.response.data.errors;
     if (!errors) return dispatch(setAlert("Server error", "danger") as any);
-    let errorMessages: string[] = [];
+    const errorMessages: string[] = [];
 
     const getKeys = Object.keys(errors) as unknown as string[];
 
@@ -283,7 +285,7 @@ export const deleteAccount = () => async (dispatch: Dispatch) => {
 
     const errors = err.response.data.errors;
     if (!errors) return dispatch(setAlert("Server error", "danger") as any);
-    let errorMessages: string[] = [];
+    const errorMessages: string[] = [];
 
     const getKeys = Object.keys(errors) as unknown as string[];
 
@@ -312,7 +314,7 @@ export const updateProfileAdmin =
 
       const errors = err.response.data.errors;
       if (!errors) return dispatch(setAlert("Server error", "danger") as any);
-      let errorMessages: string[] = [];
+      const errorMessages: string[] = [];
 
       const getKeys = Object.keys(errors) as unknown as string[];
 
@@ -340,7 +342,7 @@ export const deleteAccountAdmin = (id: string) => async (dispatch: Dispatch) => 
 
     const errors = err.response.data.errors;
     if (!errors) return dispatch(setAlert("Server error", "danger") as any);
-    let errorMessages: string[] = [];
+    const errorMessages: string[] = [];
 
     const getKeys = Object.keys(errors) as unknown as string[];
 

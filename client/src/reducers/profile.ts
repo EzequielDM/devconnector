@@ -6,7 +6,7 @@ interface IProfileState {
   profiles?: IProfile[];
   repos: IRepo[];
   loading: boolean;
-  error: {};
+  error: Record<string, unknown>;
 }
 
 const initialState = {

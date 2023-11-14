@@ -26,10 +26,10 @@ const Post = ({ post: { _id, avatar, comments, date, likes, name, text, user } }
       <div>
         <p className="my-1">{text}</p>
         <p className="post-date">Posted on {dayjs(date).format("MMMM DD, YYYY")}</p>
-        <button type="button" className="btn btn-light" onClick={(e) => dispatch(likePost(_id))}>
+        <button type="button" className="btn btn-light" onClick={() => dispatch(likePost(_id))}>
           <FontAwesomeIcon icon={faThumbsUp} /> {likes.length > 0 && <span>{likes.length}</span>}
         </button>
-        <button type="button" className="btn btn-light" onClick={(e) => dispatch(dislikePost(_id))}>
+        <button type="button" className="btn btn-light" onClick={() => dispatch(dislikePost(_id))}>
           <FontAwesomeIcon icon={faThumbsDown} />
         </button>
         <Link
@@ -43,7 +43,7 @@ const Post = ({ post: { _id, avatar, comments, date, likes, name, text, user } }
           <button
             type="button"
             className="btn btn-danger"
-            onClick={(e) => dispatch(deletePost(_id))}>
+            onClick={() => dispatch(deletePost(_id))}>
             <FontAwesomeIcon icon={faTimesCircle} />
           </button>
         )}

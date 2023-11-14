@@ -7,7 +7,7 @@ const ProfileDelete = ({ match }: any) => {
   const dispatch = useDispatch();
   const id = match.params.id;
 
-  let history = useHistory();
+  const history = useHistory();
 
   useEffect(() => {
     dispatch(deleteAccountAdmin(id));

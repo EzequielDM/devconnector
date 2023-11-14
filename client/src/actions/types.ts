@@ -131,7 +131,7 @@ export interface IAPIError {
   name: string;
   response: {
     data: {
-      errors: Object;
+      errors: unknown;
     };
   };
 }

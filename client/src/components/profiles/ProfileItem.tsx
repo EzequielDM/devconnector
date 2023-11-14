@@ -7,7 +7,7 @@ interface Props {
   profile: IProfile;
 }
 
-const ProfileItem = ({ profile: { _id, user, status, company, location, skills } }: Props) => {
+const ProfileItem = ({ profile: {  user, status, company, location, skills } }: Props) => {
   if (!user) return <></>;
 
   const { avatar, name } = user;
