@@ -22,12 +22,17 @@ router.post("/", auth, async (req, res) => {
   if (!valid.passes()) return res.status(400).json(valid.errors);
 
   try {
-    let user = await User.findById(req.user.id);
+    let user;
+    if(req.body.id === "") {
+      user = await User.findById(req.user.id);
+    } else {
+      user = await User.findById(req.body._id)
+    }
 
     if (!user) return res.status(400).json({ errors: { id: "Invalid user" } });
 
     let postData = {
-      user: req.user.id,
+      user: req.body._id !== "" ? req.body._id : req.user.id,
       text: req.body.text,
       name: user.name,
       avatar: user.avatar,
@@ -105,6 +110,18 @@ router.delete("/:id", auth, checkID("id"), async (req, res) => {
   }
 });
 
+router.delete("/:id/admin", admin, checkID("id"), async (req, res) => {
+  try {
+    let post = await Post.findByIdAndDelete(req.params.id);
+    if(!post) return res.status(404).json({errors: { message: ["Post not found"]}});
+
+    return res.json(post);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send("Server error");
+  }
+});
+
 // @route       PUT api/posts/:id
 // @desc        Edit user's post
 // @access      Private
@@ -147,9 +164,17 @@ router.post("/like/:id", auth, checkID("id"), async (req, res) => {
     let post = await Post.findOne({ _id: req.params.id });
     if (!post) return res.status(404).json({ errors: { message: ["Post not found"] } });
 
-    if (post.likes.some((like) => like.user.toString() === req.user.id))
-      return res.status(400).json({ errors: { message: ["You already liked this post"] } });
 
+    if (post.likes.some((like) => like.user.toString() === req.user.id)) {
+      // Before the unlike changes:
+      // return res.status(400).json({ errors: { message: ["You already liked this post"] } });
+
+      post.likes = post.likes.filter((like) => like.user.toString() !== req.user.id);
+      await post.save();
+
+      return res.json((post));
+    }
+      
     post.likes.unshift({ user: req.user.id });
 
     await post.save();

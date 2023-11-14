@@ -8,7 +8,7 @@ import animateScrollTo from "animated-scroll-to";
 // Get posts
 export const getPosts = () => async (dispatch: Dispatch) => {
   try {
-    const res = await api.get("/posts");
+    const res = await api.get("/posts/all");
 
     dispatch({
       type: ActionTypes.GET_POSTS,
@@ -71,6 +71,23 @@ export const likePost = (_id: string) => async (dispatch: Dispatch) => {
   }
 };
 
+// Ghost like post (admin)
+export const ghostLikePost = (_id: string) => async (dispatch: Dispatch) => {
+  try {
+    const res = await api.post(`/posts/like/${_id}/admin`);
+
+    dispatch({
+      type: ActionTypes.UPDATE_LIKES,
+      payload: {_id, likes: res.data.likes},
+    });
+  } catch (err: any) {
+    dispatch({
+      type: ActionTypes.POST_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status },
+    });
+  }
+}
+
 // Dislike post
 export const dislikePost = (_id: string) => async (dispatch: Dispatch) => {
   try {
@@ -106,6 +123,25 @@ export const deletePost = (_id: string) => async (dispatch: Dispatch) => {
     });
   }
 };
+
+// Delete post (admin)
+export const deletePostAdmin = (_id: string) => async (dispatch: Dispatch) => {
+  try {
+    await api.delete(`/posts/${_id}/admin`);
+
+    dispatch(setAlert("Post deleted forcefully", "success") as any);
+
+    dispatch({
+      type: ActionTypes.DELETE_POST,
+      payload: _id
+    });
+  } catch (err: any) {
+    dispatch({
+      type: ActionTypes.POST_ERROR,
+      payload: {msg: err.response.statusText, status: err.response.status },
+    });
+  }
+}
 
 // Create a post
 export const addPost = (post: IPost) => async (dispatch: Dispatch) => {

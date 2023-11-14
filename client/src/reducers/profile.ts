@@ -53,6 +53,12 @@ export const profile = (state: IProfileState = initialState, action: Action): IP
         repos: payload,
         loading: false,
       };
+    case ActionTypes.CLEAR_REPOS:
+      return {
+        ...state,
+        repos: [],
+        loading: false,
+      };
     default:
       return state;
   }

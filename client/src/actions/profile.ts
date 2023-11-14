@@ -58,9 +58,12 @@ export const getProfileByID = (id: string) => async (dispatch: Dispatch) => {
 
 // Get all github repos
 export const getGithubRepos = (username: string) => async (dispatch: Dispatch) => {
-  if (username === "") return;
+  if(username === "") {
+    dispatch({ type: ActionTypes.CLEAR_REPOS});
+    return;
+  }
   try {
-    const res = await api.get(`/profile/github/${username}`);
+    const res = await api.get(`/profile/github/${username}`); 
 
     dispatch({ type: ActionTypes.GET_REPOS, payload: res.data });
   } catch (err: any) {
@@ -74,10 +77,14 @@ export const getGithubRepos = (username: string) => async (dispatch: Dispatch) =
     // Is AxiosError
     if (err.response) {
       // GH User does not exist, server responded successfully
-      if (err.response.status === 404 && err.response.data.errors.message === "Not Found") return;
+      if (err.response.status === 404 && err.response.data.errors.message === "Not Found") {
+        dispatch({type: ActionTypes.CLEAR_REPOS});
+        return;
+      }
     }
 
     dispatch(setAlert("Error while trying to get repos", "danger") as any);
+    dispatch({type: ActionTypes.CLEAR_REPOS});
   }
 };
 
