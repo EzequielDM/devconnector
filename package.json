@@ -36,7 +36,7 @@
     "@types/react-router-dom": "^5.3.0",
     "@types/redux": "^3.6.0",
     "animated-scroll-to": "^2.2.0",
-    "axios": "^0.21.4",
+    "axios": "^0.28.0",
     "bcryptjs": "^2.4.3",
     "concurrently": "^6.3.0",
     "config": "^3.3.6",
