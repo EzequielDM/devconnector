@@ -41,7 +41,7 @@
     "concurrently": "^6.3.0",
     "config": "^3.3.6",
     "dayjs": "^1.10.7",
-    "express": "^4.17.1",
+    "express": "^4.19.2",
     "express-validator": "^6.12.2",
     "fortawesome": "0.0.1-security",
     "gravatar": "^1.8.2",
